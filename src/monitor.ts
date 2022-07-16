@@ -6,6 +6,7 @@ import type { VenueToWatch } from "./controllers/VenuesService";
 import VenuesService from "./controllers/VenuesService";
 import dayjs from "dayjs";
 import type { EnhancedSlot } from "./types/find";
+import 'dotenv/config';
 
 const email = process.env.RESY_EMAIL!;
 const password = process.env.RESY_PASSWORD!;
