@@ -137,10 +137,16 @@ const regenerateHeaders = async () => {
     process.exit(1);
   }
 };
-// every day fetch every post
-cron.scheduleJob("*/5 * * * *", refreshAvailability);
-cron.scheduleJob("1 * * * *", regenerateHeaders);
 
-regenerateHeaders().then(async () => {
-  await refreshAvailability();
-});
+
+const runResy = async () => {
+// every day fetch every post
+  cron.scheduleJob("*/5 * * * *", refreshAvailability);
+  cron.scheduleJob("1 * * * *", regenerateHeaders);
+
+  regenerateHeaders().then(async () => {
+    await refreshAvailability();
+  });
+};
+
+export default runResy;
