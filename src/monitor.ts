@@ -1,9 +1,9 @@
 import cron from "node-schedule";
-import log from "./log";
-import ResyService from "./controllers/ResyService";
-import TextService from "./controllers/TextService";
-import type { VenueToWatch } from "./controllers/VenuesService";
-import VenuesService from "./controllers/VenuesService";
+import log from "./log.js";
+import ResyService from "./controllers/ResyService.js";
+import TextService from "./controllers/TextService.js";
+import type { VenueToWatch } from "./controllers/VenuesService.js";
+import VenuesService from "./controllers/VenuesService.js";
 import dayjs from "dayjs";
 import type { EnhancedSlot } from "./types/find";
 import 'dotenv/config';
@@ -140,6 +140,7 @@ const regenerateHeaders = async () => {
 
 
 const runResy = async () => {
+  console.log("running runResy");
 // every day fetch every post
   cron.scheduleJob("*/5 * * * *", refreshAvailability);
   cron.scheduleJob("1 * * * *", regenerateHeaders);

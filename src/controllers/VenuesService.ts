@@ -72,6 +72,25 @@ class VenuesService {
     }
     await this.save();
   };
+
+  updateVenue = async (venue: VenueToWatch) => {
+    const venues = this.db.data!.venues || [];
+    for (let i = 0; i < venues.length; i++) {
+      if (venues[i].id === venue.id) {
+        venues[i].minTime = venue.minTime;
+        venues[i].maxTime = venue.maxTime;
+        venues[i].preferredTime = venue.preferredTime;
+        venues[i].partySize = venue.partySize;
+        venues[i].allowedDates = venue.allowedDates;
+        venues[i].shouldBook = true;
+        break;
+      }
+    }
+    if (venues === []) {
+      this.addWatchedVenue(venue);
+    };
+    await this.save();
+  }
 }
 
 export default VenuesService;

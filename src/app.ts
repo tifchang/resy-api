@@ -1,11 +1,14 @@
 // import { App, LogLevel } from '@slack/bolt';
 import pkg from '@slack/bolt';
+import { subtype, BotMessageEvent, BlockAction } from '@slack/bolt';
 const { App, LogLevel } = pkg;
 import 'dotenv/config';
 import runResy from './monitor.js';
 import { resolve } from 'path';
 import { isGenericMessageEvent } from './utils/helpers';
-import { Say } from 'twilio/lib/twiml/VoiceResponse.js';
+import { VenueToWatch } from './controllers/VenuesService.js';
+import VenuesService from "./controllers/VenuesService.js";
+const venuesService = new VenuesService();
 
 // initializes app
 const app = new App({
@@ -16,31 +19,60 @@ const app = new App({
     appToken: process.env.APP_TOKEN
   });
 
-  app.use(async ({ next }) => {
-    await next!();
-  });
+app.use(async ({ next }) => {
+await next!();
+});
+// initializes db
+venuesService.init();
+var venue: VenueToWatch;
+venue = {
+    "name": "",
+    "id": 0,
+    "notified": true,
+    "minTime": "18:00",
+    "preferredTime": "19:00",
+    "maxTime": "20:00",
+    "shouldBook": true,
+    "partySize": 2,
+    "allowedDates": [],
+    "uuid": ""
+};
 
-  app.message(/^(hi|hello|hey).*/, async ({ message, say, client }) => {
-    await say("Hello there, Neil! :woman-gesturing-ok:");
+const uuids = {
+    "834": "8e0594e5-9507-46d3-822b-b0d691f48b93",
+    "25973": "c28d7bb3-0c24-4da7-97a3-1d6c6ff34535",
+    "42534": "e8649fc3-f506-47e5-ba6a-d35b364016f2",
+    "35676": "5442af91-5983-4f89-8da1-3d38dec99998",
+    "5771": "619fe279-097a-4ebf-a558-f71dec5cf8e6"
+}
 
-    // Initialize all scheduled messages
-    // modify this to be midnight 7/21
-    const time = new Date(2022, 6, 16, 17, 4).getTime()/1000;
-    try {
-        const result = await client.chat.scheduleMessage({
-            channel: message.channel,
-            text: "Summer has come and passed",
-            post_at: time
-          });
+// welcome message
+app.message(/^(hi|hello|hey).*/, async ({ message, say, client }) => {
+await say("Hello there, Neil! :woman-gesturing-ok:");
 
-    }
-    catch (e) {
-        console.log(e);
-    }
-  });
+// venuesService.updateVenue(venuePayload);
+// const resp = await runResy();
 
-  app.command('/reserve', async ({ command, ack, respond }) => {
-    // Acknowledge command request
+
+// Initialize all scheduled messages
+// modify this to be midnight 7/21
+// const time = new Date(2022, 6, 16, 17, 4).getTime()/1000;
+// try {
+//     const result = await client.chat.scheduleMessage({
+//         channel: message.channel,
+//         text: "Summer has come and passed",
+//         post_at: time
+//         });
+
+// }
+// catch (e) {
+//     console.log(e);
+// }
+});
+
+
+app.command('/reserve', async ({ command, ack, respond }) => {
+// Acknowledge command request
     await ack();
     const welcomeResponse = {
         "blocks": [
@@ -94,6 +126,7 @@ const app = new App({
             },
             {
                 "type": "section",
+                "block_id": "restaurants_1",
                 "text": {
                     "type": "mrkdwn",
                     "text": "*:bento: Select a restaurant to book*"
@@ -109,45 +142,45 @@ const app = new App({
                         {
                             "text": {
                                 "type": "plain_text",
-                                "text": ":cut_of_meat: 4 Charles Prime Rib",
+                                "text": "4 Charles Prime Rib",
                                 "emoji": true
                             },
-                            "value": "value-0"
+                            "value": "834"
                         },
                         {
                             "text": {
                                 "type": "plain_text",
-                                "text": ":spaghetti: L'Artusi",
+                                "text": "L'Artusi",
                                 "emoji": true
                             },
-                            "value": "value-1"
+                            "value": "25973"
                         },
                         {
                             "text": {
                                 "type": "plain_text",
-                                "text": ":chicken: Double Chicken Please",
+                                "text": "Double Chicken Please",
                                 "emoji": true
                             },
-                            "value": "value-2"
+                            "value": "42534"
                         },
                         {
                             "text": {
                                 "type": "plain_text",
-                                "text": ":kr: Cote",
+                                "text": "Cote",
                                 "emoji": true
                             },
-                            "value": "value-2"
+                            "value": "35676"
                         },
                         {
                             "text": {
                                 "type": "plain_text",
-                                "text": ":it: Rezdôra",
+                                "text": "Rezdôra",
                                 "emoji": true
                             },
-                            "value": "value-2"
+                            "value": "5771"
                         }
                     ],
-                    "action_id": "static_select-action"
+                    "action_id": "select_restaurant"
                 }
             },
             {
@@ -155,6 +188,7 @@ const app = new App({
             },
             {
                 "type": "section",
+                "block_id": "party_1",
                 "text": {
                     "type": "mrkdwn",
                     "text": ":dancers: *Select a party size*"
@@ -173,7 +207,7 @@ const app = new App({
                                 "text": "2",
                                 "emoji": true
                             },
-                            "value": "value-0"
+                            "value": "2"
                         },
                         {
                             "text": {
@@ -181,7 +215,7 @@ const app = new App({
                                 "text": "3",
                                 "emoji": true
                             },
-                            "value": "value-1"
+                            "value": "3"
                         },
                         {
                             "text": {
@@ -189,7 +223,7 @@ const app = new App({
                                 "text": "4",
                                 "emoji": true
                             },
-                            "value": "value-2"
+                            "value": "4"
                         },
                         {
                             "text": {
@@ -197,7 +231,7 @@ const app = new App({
                                 "text": "5",
                                 "emoji": true
                             },
-                            "value": "value-2"
+                            "value": "5"
                         },
                         {
                             "text": {
@@ -205,10 +239,10 @@ const app = new App({
                                 "text": "6",
                                 "emoji": true
                             },
-                            "value": "value-2"
+                            "value": "6"
                         }
                     ],
-                    "action_id": "static_select-action"
+                    "action_id": "select_party"
                 }
             },
             {
@@ -223,6 +257,7 @@ const app = new App({
             },
             {
                 "type": "actions",
+                "block_id": "datepickers_1",
                 "elements": [
                     {
                         "type": "datepicker",
@@ -232,7 +267,7 @@ const app = new App({
                             "text": "Select a date",
                             "emoji": true
                         },
-                        "action_id": "datepicker-action"
+                        "action_id": "date_1"
                     },
                     {
                         "type": "datepicker",
@@ -242,7 +277,7 @@ const app = new App({
                             "text": "Select a date",
                             "emoji": true
                         },
-                        "action_id": "datepicker-action2"
+                        "action_id": "date_2"
                     }
                 ]
             },
@@ -268,6 +303,7 @@ const app = new App({
             },
             {
                 "type": "actions",
+                "block_id": "timepicker_ideal",
                 "elements": [
                     {
                         "type": "timepicker",
@@ -277,7 +313,7 @@ const app = new App({
                             "text": "Select time",
                             "emoji": true
                         },
-                        "action_id": "timepicker-action2"
+                        "action_id": "time_ideal"
                     }
                 ]
             },
@@ -293,6 +329,7 @@ const app = new App({
             },
             {
                 "type": "actions",
+                "block_id": "timepicker_minmax",
                 "elements": [
                     {
                         "type": "timepicker",
@@ -302,7 +339,7 @@ const app = new App({
                             "text": "Select time",
                             "emoji": true
                         },
-                        "action_id": "timepicker-action2"
+                        "action_id": "time_min"
                     },
                     {
                         "type": "timepicker",
@@ -312,33 +349,99 @@ const app = new App({
                             "text": "Select time",
                             "emoji": true
                         },
-                        "action_id": "timepicker-action3"
+                        "action_id": "time_max"
                     }
                 ]
             },
             {
                 "type": "actions",
+                "block_id": "submit_1",
                 "elements": [
                     {
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "text": ":white_check_mark: Submit",
+                            "text": ":white_check_mark: Done",
                             "emoji": true
                         },
                         "value": "click_me_123",
-                        "action_id": "actionId-0"
+                        "action_id": "submit_button"
                     }
                 ]
             }
         ]
     }
     await respond (welcomeResponse);
+});
 
-  });
 
-  (async () => {
-    // Start your app
-    await app.start(Number(process.env.PORT) || 6000);
-    console.log('⚡️ Slack app is running!');
-  })();
+// select restaurant
+app.action<BlockAction>({ action_id: 'select_restaurant', block_id: 'restaurants_1'}, async ({ body, ack }) => {
+    await ack();
+    const key = body.state?.values.restaurants_1.select_restaurant.selected_option?.value || "0";
+    venue.id = parseInt(key);
+    venue.name = body.state?.values.restaurants_1.select_restaurant.selected_option?.text.text || venue.name;
+    venue.uuid = uuids[key];
+    console.log("VENUE ID: " + venue.id);
+    console.log("VENUE NAME: " + venue.name);
+    console.log("VENUE UUID: " + venue.uuid);
+});
+// select party size
+app.action<BlockAction>({ action_id: 'select_party', block_id: 'party_1'}, async ({ body, ack }) => {
+    await ack();
+    venue.partySize = parseInt(body.state?.values.party_1.select_party.selected_option?.value || "2");
+    console.log("PARTYSIZE: " + venue.partySize);
+});
+
+// select ideal date
+app.action<BlockAction>({ action_id: 'date_1', block_id: 'datepickers_1'}, async ({ body, ack }) => {
+    await ack();
+    venue.allowedDates.push(body.state?.values.datepickers_1.date_1.selected_date || "");
+    console.log("ALLOWED DATES: " + venue.allowedDates);
+});
+
+// select backup date
+app.action<BlockAction>({ action_id: 'date_2', block_id: 'datepickers_1'}, async ({ body, ack }) => {
+    await ack();
+    venue.allowedDates.push(body.state?.values.datepickers_1.date_2.selected_date || "");
+    console.log("ALLOWED DATES: " + venue.allowedDates);
+});
+
+// select ideal time
+app.action<BlockAction>({ action_id: 'time_ideal', block_id: 'timepicker_ideal'}, async ({ body, ack }) => {
+    await ack();
+    venue.preferredTime = body.state?.values.timepicker_ideal.time_ideal.selected_time || venue.preferredTime;
+    console.log("PREFTIME " + venue.preferredTime);
+});
+
+// select min time
+app.action<BlockAction>({ action_id: 'time_min', block_id: 'timepicker_minmax'}, async ({ body, ack }) => {
+    await ack();
+    venue.minTime = body.state?.values.timepicker_minmax.time_min.selected_time || venue.minTime;
+    console.log("MINTIME " + venue.minTime);
+});
+
+// select max time
+app.action<BlockAction>({ action_id: 'time_max', block_id: 'timepicker_minmax'}, async ({ body, ack }) => {
+    await ack();
+    venue.maxTime = body.state?.values.timepicker_minmax.time_max.selected_time || venue.maxTime;
+    console.log("MAXTIME " + venue.maxTime);
+    console.log("VENUE: " + JSON.stringify(venue));
+});
+
+app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, respond }) => {
+    await ack();
+    venuesService.updateVenue(venue);
+    console.log("checking now for reservatios");
+    runResy();
+    await respond({
+        "text": "Thanks for your request, I'll process it and get back to you if I find something."
+    });
+});
+
+
+(async () => {
+// Start your app
+await app.start(Number(process.env.PORT) || 6000);
+console.log('⚡️ Slack app is running!');
+})();
