@@ -1,4 +1,4 @@
-import ResyService from "./controllers/ResyService";
+import ResyService from "./controllers/ResyService.js";
 
 const run = async () => {
   const service = new ResyService({

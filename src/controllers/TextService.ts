@@ -1,6 +1,6 @@
 import type { Twilio } from "twilio";
 import twilio from "twilio";
-import logger from "../log";
+import logger from "../log.js";
 
 class TextService {
   client: Twilio | undefined;
