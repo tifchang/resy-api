@@ -1,13 +1,13 @@
 // import { App, LogLevel } from '@slack/bolt';
-import pkg from '@slack/bolt';
-import { subtype, BotMessageEvent, BlockAction } from '@slack/bolt';
+import pkg, { subtype, BotMessageEvent, BlockAction, AppRequestedEvent, GenericMessageEvent, MessageChangedEvent } from '@slack/bolt';
 const { App, LogLevel } = pkg;
 import 'dotenv/config';
 import runResy from './monitor.js';
 import { resolve } from 'path';
-import { isGenericMessageEvent } from './utils/helpers';
+import { isGenericMessageEvent } from './utils/helpers.js';
 import { VenueToWatch } from './controllers/VenuesService.js';
 import VenuesService from "./controllers/VenuesService.js";
+import Chat from 'twilio/lib/rest/Chat.js';
 const venuesService = new VenuesService();
 
 // initializes app
@@ -46,9 +46,10 @@ const uuids = {
     "5771": "619fe279-097a-4ebf-a558-f71dec5cf8e6"
 }
 
-// welcome message
-app.message(/^(hi|hello|hey).*/, async ({ message, say, client }) => {
-await say("Hello there, Neil! :woman-gesturing-ok:");
+const channelIds = {
+    "tiff": "U03P3TRJ83B",
+    "neil": ""
+}
 
 // venuesService.updateVenue(venuePayload);
 // const resp = await runResy();
@@ -68,13 +69,97 @@ await say("Hello there, Neil! :woman-gesturing-ok:");
 // catch (e) {
 //     console.log(e);
 // }
+
+
+// welcome message
+app.message(/(hi|hello|hey)/, async ({ message, say }) => {
+    const welcomeMsg = {
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Hello Neil :woman-gesturing-ok: \n\n I'm Chibi Chang, your virtual assistant. I was made by Tiffany, so I'm pretty simple (she only knows how to write shitty code, but she'll write code for her favorite people)."
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "I heard it's your birthday tomorrow! :tada: She built me to guide you through your birthday (yes, it's a whole day). \n\n Oh this picture? it's her favorite baby Neil pic :heart_eyes:"
+                    },
+                    "accessory": {
+                        "type": "image",
+                        "image_url": "https://i.ibb.co/nMSMJZP/315359-581190598568148-1914769603-n.jpg",
+                        "alt_text": "cute cat"
+                    }
+                },
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "So how does this work?",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Tiffany hid a bunch of gifts in me. There are :four: total. I will tell you what the gift is when you guess one of the three keywords. If you don't guess anything that relates to a gift, I will remain silent."
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*A few notes:* \n\n :love_letter: In addition to the gifts, she's written a card as a series of vignettes that will get released at set times throughout the day. \n:bell: Keep your notifications on so you don't miss them! \n :woman-raising-hand: If you get stuck, you can text Tiffany for a clue (she can't see your chat with me). \n :camera_with_flash: Once you discover a gift, text a screenshot to Tiffany. "
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Ready to begin?* Click the button below to begin."
+                    }
+                },
+                {
+                    "type": "actions",
+                    "block_id": 'example_1',
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": ":woman-cartwheeling: Let's do a practice round",
+                                "emoji": true
+                            },
+                            "value": "click_me_123",
+                            "action_id": "example_button"
+                        }
+                    ]
+                }
+            ]
+    } 
+    if (!isGenericMessageEvent(message)) return;
+    if (message.user != "U03P3TRJ83B") {
+        channelIds.neil = message.user;
+    }
+    
+    await say(welcomeMsg);
 });
 
 
 app.command('/reserve', async ({ command, ack, respond }) => {
 // Acknowledge command request
     await ack();
-    const welcomeResponse = {
+    const resyForm = {
         "blocks": [
             {
                 "type": "section",
@@ -371,7 +456,7 @@ app.command('/reserve', async ({ command, ack, respond }) => {
             }
         ]
     }
-    await respond (welcomeResponse);
+    await respond (resyForm);
 });
 
 
@@ -432,13 +517,110 @@ app.action<BlockAction>({ action_id: 'time_max', block_id: 'timepicker_minmax'},
 app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, respond }) => {
     await ack();
     venuesService.updateVenue(venue);
-    console.log("checking now for reservatios");
     runResy();
     await respond({
         "text": "Thanks for your request, I'll process it and get back to you if I find something."
     });
 });
 
+app.action({ action_id: 'example_button', block_id: 'example_1'}, async ({ ack, respond }) => {
+    await ack();
+    await respond({
+        "text": "Tiffany already told you that she was taking you out tonight. Maybe try ask me _What's for dinner?_ or _Where are we going tonight?_ Since she's giving you a practice round, I'll only tell you half the truth. You'll get the rest there :wink:"
+    });
+});
+
+app.message(/(dinner|tonight)/, async ({ message, say, client }) => {
+    const dons = {
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "dons",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ":kr: :cut_of_meat: *You're going to Don's Bogam!* \n\n Tonight at *8:00pm*, Tiffany will see you at the door of Don's Bogam. She remembers you told her once that this was one of the best places in NYC. So obviously, we have to go tonight! \n _17 E 32nd St, New York, NY 10016_"
+                },
+                "accessory": {
+                    "type": "image",
+                    "image_url": "https://i.ibb.co/TkgvhR2/Screen-Shot-2022-07-18-at-9-22-41-PM.png",
+                    "alt_text": "cute cat"
+                }
+            }
+        ]
+    }
+    await say(dons);
+});
+
+app.message(/(naruto|akatsuki|cloak)/, async ({ message, say, client }) => {
+    const naruto = {
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "dons",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*:coat: One more piece to your Akatsuki collection* \n\n Check underneath your bed for a package. Open it and try it on. \n\n *Why did she get you this? Read this note :love_letter:* \n\n Neil, one of the things I love most about you is how silly & carefree you are. You're diligent when you're working towards a goal, mature if there's an important matter, empathetic if I'm upset, yet still so happy & silly during all the moments inbetween. You make me laugh, a lot, yes, even sugar cube does it for me. You remind me that life has many kinds of moments, and that most importantly you enjoy it. Your absurd love for anime (and my dragonball keychain) reminds me about this part of you."
+                },
+                "accessory": {
+                    "type": "image",
+                    "image_url": "https://i.ibb.co/Gc6JNJ9/Screen-Shot-2022-07-18-at-9-32-53-PM.png",
+                    "alt_text": "akatsuki"
+                }
+            }
+        ]
+    }
+    await say(naruto);
+});
+
+app.message(/(cool girl|cool|girl)/, async ({ message, say, client }) => {
+    const cool = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*:bikini: New outfit?* She might already have it on, but cool girl can only reveal her gift IRL, she'll see you in bed tonight :smirk: \n\n *Read this note :love_letter:* \n\n I kept a Trello board with notes and thoughts from each of our early dates. Here are some you'd appreciate: \n\n :heart: when we got back to my place, mans couldn't wait and basically we made out in the lobby but my ass was on the heater and I swear I have burn marks on my butt. It was kinda hot, he's pretty hot. \n :heart: this could be stockholm but he's also actively interviewing at Citadel which idk it just gets me going \n :heart: hell yeah his body and 🍆 are 👌🏼 would feast \n :heart: I told him I would drop his ass so fast if I walked in and he had the patagonia MS vest on, so he went to his closet grabbed it and wore it to sleep for the rest of the night. 💀 ngl the vest…kinda turned me on? \n :heart: had probably one of the best first dates, went to a whiskey tasting and got cocktails in Tribeca then went back to his place played ping pong and fooked. He was honestly a good blend of everything: smart, driven, relaxed, funny (very), has depth, social, and also very sweet. He kicked my ass in ping pong using his non dominant hand wtf but also dtf."
+                }
+            }
+        ]
+    }
+    await say(cool);
+});
+
+app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) => {
+    const resyReveal = {
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "dons",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*:date: Did you know I have other abilities?* \n\n That's right, Tiffany gave me some sick abilities. You mentioned once that you'd like a very specific kind of bot...why don't you give me a try? Type `/reserve` into the chat. Maybe take her on a date? \n\n *Why did she get you this? Read this note :love_letter:* \n\n Neil, all our dates are ridiculous. Every time I tell someone we went _here_ or _there_, everyone is shook someone would even take me there. I thought it was some lead conversion strategy, but I realized it was just that you only treat me to the best - and it makes me feel so loved. It took me some time and a lot of anxious thoughts to overcome the reality of your limited bandwidth, but I realized even still you try to make time for me andtreat me so well. Even beyond dates, what I've loved the most is how you never take out your phone when we're together, how you suggest things to do (and even plan wow), and how you prioritize me and my enjoyment. \n\n I wanted to build something you kind of already wanted, asked for, but couldn't do at the time. I hope this makes planning easier.  \n\n Behold, your own Resy bot, Chibi Chang.  I've preloaded it with places you love, one of our favorite spots, and L'Artusi so maybe you can get a reservation this time :kissing_heart:. Love you so much, Neil."
+                }
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "plain_text",
+                        "text": "I also learned a new programming language to do this, so there may be bugs here and there (just let me know and I can fix it).",
+                        "emoji": true
+                    }
+                ]
+            }
+        ]
+    }
+    await say (resyReveal);
+});
+
+const postMessage = async(str: string, rest: string) => {
+    await app.client.chat.postMessage({
+        text: `:star-struck: I found a reservation! You're successfully booked at ${rest}! Please login to your Resy to see details on the reservation.`,
+        channel: channelIds.tiff
+      });
+}
+
+export default postMessage;
 
 (async () => {
 // Start your app

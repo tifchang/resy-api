@@ -7,6 +7,7 @@ import VenuesService from "./controllers/VenuesService.js";
 import dayjs from "dayjs";
 import type { EnhancedSlot } from "./types/find";
 import 'dotenv/config';
+import postMessage from "./app.js";
 
 const email = process.env.RESY_EMAIL!;
 const password = process.env.RESY_PASSWORD!;
@@ -14,7 +15,7 @@ const service = new ResyService({
   email,
   password,
 });
-
+var neilId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
 
@@ -61,6 +62,7 @@ const parsePossibleSlots = async (
     });
 
     venue.reservationDetails = bookingResponse.data;
+    postMessage(neilId, venue.name);
     log.info(`Successfully booked at ${venue.name}`);
     await venuesService.updateWatchedVenue(venue);
   }
@@ -142,7 +144,7 @@ const regenerateHeaders = async () => {
 const runResy = async () => {
   console.log("running runResy");
 // every day fetch every post
-  cron.scheduleJob("*/5 * * * *", refreshAvailability);
+  cron.scheduleJob("*/1 * * * *", refreshAvailability);
   cron.scheduleJob("1 * * * *", regenerateHeaders);
 
   regenerateHeaders().then(async () => {

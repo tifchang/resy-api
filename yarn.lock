@@ -161,6 +161,13 @@
   dependencies:
     "@types/node" ">=12.0.0"
 
+"@slack/logger@>=1.0.0 <3.0.0":
+  "integrity" "sha512-OkIJpiU2fz6HOJujhlhfIGrc8hB4ibqtf7nnbJQDerG0BqwZCfmgtK5sWzZ0TkXVRBKD5MpLrTmCYyMxoMCgPw=="
+  "resolved" "https://registry.npmjs.org/@slack/logger/-/logger-2.0.0.tgz"
+  "version" "2.0.0"
+  dependencies:
+    "@types/node" ">=8.9.0"
+
 "@slack/oauth@^2.5.1":
   "integrity" "sha512-NjkJBNSHw2edpSe4bPMO0DvGR2Hl9J37kYjopH06LXFEvh+ucxrds9VUnPNj3t0n32zVo/f7iniGdDl0Zk+t+g=="
   "resolved" "https://registry.npmjs.org/@slack/oauth/-/oauth-2.5.4.tgz"
@@ -172,6 +179,22 @@
     "@types/node" ">=12"
     "jsonwebtoken" "^8.5.1"
     "lodash.isstring" "^4.0.1"
+
+"@slack/rtm-api@^6.0.0":
+  "integrity" "sha512-4jgONmC10/RdV6Q07e6PRUXrORPs2Xhe2gWKcGo49D2rCFy8H8SpM1RxowrVLYXqXUoMt3fIrqu050SuF4iVVA=="
+  "resolved" "https://registry.npmjs.org/@slack/rtm-api/-/rtm-api-6.0.0.tgz"
+  "version" "6.0.0"
+  dependencies:
+    "@slack/logger" ">=1.0.0 <3.0.0"
+    "@slack/web-api" "^5.3.0"
+    "@types/node" ">=12.0.0"
+    "@types/p-queue" "^2.3.2"
+    "@types/ws" "^7.2.5"
+    "eventemitter3" "^3.1.0"
+    "finity" "^0.5.4"
+    "p-cancelable" "^1.1.0"
+    "p-queue" "^2.4.2"
+    "ws" "^5.2.0"
 
 "@slack/socket-mode@^1.3.0":
   "integrity" "sha512-jAHj4CXZFxCq/pzGYD4ynvZ9udhJxJm26TTfmo/Ed7UiiYqDa3CwhE3jvOUwls4bn6s65QOsiLWIVhGU+L9FIw=="
@@ -189,10 +212,31 @@
     "p-queue" "^2.4.2"
     "ws" "^7.5.3"
 
+"@slack/types@^1.7.0":
+  "integrity" "sha512-tA7GG7Tj479vojfV3AoxbckalA48aK6giGjNtgH6ihpLwTyHE3fIgRrvt8TWfLwW8X8dyu7vgmAsGLRG7hWWOg=="
+  "resolved" "https://registry.npmjs.org/@slack/types/-/types-1.10.0.tgz"
+  "version" "1.10.0"
+
 "@slack/types@^2.0.0", "@slack/types@^2.7.0":
   "integrity" "sha512-QUrHBilZeWyXAuHfEbSnzBwvFm4u/75LHKRKu8xRUnGNt35Amz8y9YQwb6voU1S5FmTYxMNAL+ZbAPTor4aRdw=="
   "resolved" "https://registry.npmjs.org/@slack/types/-/types-2.7.0.tgz"
   "version" "2.7.0"
+
+"@slack/web-api@^5.3.0":
+  "integrity" "sha512-tjQ8Zqv/Fmj9SOL9yIEd7IpTiKfKHi9DKAkfRVeotoX0clMr3SqQtBqO+KZMX27gm7dmgJsQaDKlILyzdCO+IA=="
+  "resolved" "https://registry.npmjs.org/@slack/web-api/-/web-api-5.15.0.tgz"
+  "version" "5.15.0"
+  dependencies:
+    "@slack/logger" ">=1.0.0 <3.0.0"
+    "@slack/types" "^1.7.0"
+    "@types/is-stream" "^1.1.0"
+    "@types/node" ">=8.9.0"
+    "axios" "^0.21.1"
+    "eventemitter3" "^3.1.0"
+    "form-data" "^2.5.0"
+    "is-stream" "^1.1.0"
+    "p-queue" "^6.6.1"
+    "p-retry" "^4.0.0"
 
 "@slack/web-api@^6.2.3", "@slack/web-api@^6.3.0", "@slack/web-api@^6.7.1":
   "integrity" "sha512-qgWMxdy1A2uNvhETfRl349UjTEvnUzHl947Ly5c+lqOrXJIwsG12szL4tD3WrRlTuxCijDemF3FjtUNz18YAxg=="
@@ -346,7 +390,7 @@
   "resolved" "https://registry.npmjs.org/@types/ms/-/ms-0.7.31.tgz"
   "version" "0.7.31"
 
-"@types/node@*", "@types/node@^17.0.42", "@types/node@>=12", "@types/node@>=12.0.0":
+"@types/node@*", "@types/node@^17.0.42", "@types/node@>=12", "@types/node@>=12.0.0", "@types/node@>=8.9.0":
   "integrity" "sha512-Q5BPGyGKcvQgAMbsr7qEGN/kIPN6zZecYYABeTDBizOsau+2NMdSVTar9UQw21A2+JyA2KRNDYaYrPB0Rpk2oQ=="
   "resolved" "https://registry.npmjs.org/@types/node/-/node-17.0.42.tgz"
   "version" "17.0.42"
@@ -389,7 +433,7 @@
   "resolved" "https://registry.npmjs.org/@types/tsscmp/-/tsscmp-1.0.0.tgz"
   "version" "1.0.0"
 
-"@types/ws@^7.4.7":
+"@types/ws@^7.2.5", "@types/ws@^7.4.7":
   "integrity" "sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww=="
   "resolved" "https://registry.npmjs.org/@types/ws/-/ws-7.4.7.tgz"
   "version" "7.4.7"
@@ -397,21 +441,21 @@
     "@types/node" "*"
 
 "@typescript-eslint/eslint-plugin-tslint@^5.27.1":
-  "integrity" "sha512-U95M4jCGNbag0T5OtnwVXQJ5qx/1V9QOipcv9pQnOdIwVPPSBuoLYluOChGeuoQLHN/TjfTPqKhTBKtI3NmnRA=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/eslint-plugin-tslint/-/eslint-plugin-tslint-5.27.1.tgz"
-  "version" "5.27.1"
+  "integrity" "sha512-S2BWepPsPqdmhFEjnDSbVeJA0h5IjwIZJrB7LFm2SToey9a0Z9nuEd08u63Dte+fjqS5RFa/uiZpWpGw0gwkNw=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/eslint-plugin-tslint/-/eslint-plugin-tslint-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
-    "@typescript-eslint/utils" "5.27.1"
+    "@typescript-eslint/utils" "5.30.7"
     "lodash" "^4.17.21"
 
 "@typescript-eslint/eslint-plugin@^5.0.0", "@typescript-eslint/eslint-plugin@^5.27.1":
-  "integrity" "sha512-6dM5NKT57ZduNnJfpY81Phe9nc9wolnMCnknb1im6brWi1RYv84nbMS3olJa27B6+irUVV1X/Wb+Am0FjJdGFw=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.27.1.tgz"
-  "version" "5.27.1"
+  "integrity" "sha512-l4L6Do+tfeM2OK0GJsU7TUcM/1oN/N25xHm3Jb4z3OiDU4Lj8dIuxX9LpVMS9riSXQs42D1ieX7b85/r16H9Fw=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
-    "@typescript-eslint/scope-manager" "5.27.1"
-    "@typescript-eslint/type-utils" "5.27.1"
-    "@typescript-eslint/utils" "5.27.1"
+    "@typescript-eslint/scope-manager" "5.30.7"
+    "@typescript-eslint/type-utils" "5.30.7"
+    "@typescript-eslint/utils" "5.30.7"
     "debug" "^4.3.4"
     "functional-red-black-tree" "^1.0.1"
     "ignore" "^5.2.0"
@@ -420,68 +464,68 @@
     "tsutils" "^3.21.0"
 
 "@typescript-eslint/parser@^5.0.0", "@typescript-eslint/parser@^5.27.1":
-  "integrity" "sha512-7Va2ZOkHi5NP+AZwb5ReLgNF6nWLGTeUJfxdkVUAPPSaAdbWNnFZzLZ4EGGmmiCTg+AwlbE1KyUYTBglosSLHQ=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-5.27.1.tgz"
-  "version" "5.27.1"
+  "integrity" "sha512-Rg5xwznHWWSy7v2o0cdho6n+xLhK2gntImp0rJroVVFkcYFYQ8C8UJTSuTw/3CnExBmPjycjmUJkxVmjXsld6A=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
-    "@typescript-eslint/scope-manager" "5.27.1"
-    "@typescript-eslint/types" "5.27.1"
-    "@typescript-eslint/typescript-estree" "5.27.1"
+    "@typescript-eslint/scope-manager" "5.30.7"
+    "@typescript-eslint/types" "5.30.7"
+    "@typescript-eslint/typescript-estree" "5.30.7"
     "debug" "^4.3.4"
 
-"@typescript-eslint/scope-manager@5.27.1":
-  "integrity" "sha512-fQEOSa/QroWE6fAEg+bJxtRZJTH8NTskggybogHt4H9Da8zd4cJji76gA5SBlR0MgtwF7rebxTbDKB49YUCpAg=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-5.27.1.tgz"
-  "version" "5.27.1"
+"@typescript-eslint/scope-manager@5.30.7":
+  "integrity" "sha512-7BM1bwvdF1UUvt+b9smhqdc/eniOnCKxQT/kj3oXtj3LqnTWCAM0qHRHfyzCzhEfWX0zrW7KqXXeE4DlchZBKw=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
-    "@typescript-eslint/types" "5.27.1"
-    "@typescript-eslint/visitor-keys" "5.27.1"
+    "@typescript-eslint/types" "5.30.7"
+    "@typescript-eslint/visitor-keys" "5.30.7"
 
-"@typescript-eslint/type-utils@5.27.1":
-  "integrity" "sha512-+UC1vVUWaDHRnC2cQrCJ4QtVjpjjCgjNFpg8b03nERmkHv9JV9X5M19D7UFMd+/G7T/sgFwX2pGmWK38rqyvXw=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-5.27.1.tgz"
-  "version" "5.27.1"
+"@typescript-eslint/type-utils@5.30.7":
+  "integrity" "sha512-nD5qAE2aJX/YLyKMvOU5jvJyku4QN5XBVsoTynFrjQZaDgDV6i7QHFiYCx10wvn7hFvfuqIRNBtsgaLe0DbWhw=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
-    "@typescript-eslint/utils" "5.27.1"
+    "@typescript-eslint/utils" "5.30.7"
     "debug" "^4.3.4"
     "tsutils" "^3.21.0"
 
-"@typescript-eslint/types@5.27.1":
-  "integrity" "sha512-LgogNVkBhCTZU/m8XgEYIWICD6m4dmEDbKXESCbqOXfKZxRKeqpiJXQIErv66sdopRKZPo5l32ymNqibYEH/xg=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.27.1.tgz"
-  "version" "5.27.1"
+"@typescript-eslint/types@5.30.7":
+  "integrity" "sha512-ocVkETUs82+U+HowkovV6uxf1AnVRKCmDRNUBUUo46/5SQv1owC/EBFkiu4MOHeZqhKz2ktZ3kvJJ1uFqQ8QPg=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.30.7.tgz"
+  "version" "5.30.7"
 
-"@typescript-eslint/typescript-estree@5.27.1":
-  "integrity" "sha512-DnZvvq3TAJ5ke+hk0LklvxwYsnXpRdqUY5gaVS0D4raKtbznPz71UJGnPTHEFo0GDxqLOLdMkkmVZjSpET1hFw=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-5.27.1.tgz"
-  "version" "5.27.1"
+"@typescript-eslint/typescript-estree@5.30.7":
+  "integrity" "sha512-tNslqXI1ZdmXXrHER83TJ8OTYl4epUzJC0aj2i4DMDT4iU+UqLT3EJeGQvJ17BMbm31x5scSwo3hPM0nqQ1AEA=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
-    "@typescript-eslint/types" "5.27.1"
-    "@typescript-eslint/visitor-keys" "5.27.1"
+    "@typescript-eslint/types" "5.30.7"
+    "@typescript-eslint/visitor-keys" "5.30.7"
     "debug" "^4.3.4"
     "globby" "^11.1.0"
     "is-glob" "^4.0.3"
     "semver" "^7.3.7"
     "tsutils" "^3.21.0"
 
-"@typescript-eslint/utils@5.27.1":
-  "integrity" "sha512-mZ9WEn1ZLDaVrhRaYgzbkXBkTPghPFsup8zDbbsYTxC5OmqrFE7skkKS/sraVsLP3TcT3Ki5CSyEFBRkLH/H/w=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-5.27.1.tgz"
-  "version" "5.27.1"
+"@typescript-eslint/utils@5.30.7":
+  "integrity" "sha512-Z3pHdbFw+ftZiGUnm1GZhkJgVqsDL5CYW2yj+TB2mfXDFOMqtbzQi2dNJIyPqPbx9mv2kUxS1gU+r2gKlKi1rQ=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
     "@types/json-schema" "^7.0.9"
-    "@typescript-eslint/scope-manager" "5.27.1"
-    "@typescript-eslint/types" "5.27.1"
-    "@typescript-eslint/typescript-estree" "5.27.1"
+    "@typescript-eslint/scope-manager" "5.30.7"
+    "@typescript-eslint/types" "5.30.7"
+    "@typescript-eslint/typescript-estree" "5.30.7"
     "eslint-scope" "^5.1.1"
     "eslint-utils" "^3.0.0"
 
-"@typescript-eslint/visitor-keys@5.27.1":
-  "integrity" "sha512-xYs6ffo01nhdJgPieyk7HAOpjhTsx7r/oB9LWEhwAXgwn33tkr+W8DI2ChboqhZlC4q3TC6geDYPoiX8ROqyOQ=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.27.1.tgz"
-  "version" "5.27.1"
+"@typescript-eslint/visitor-keys@5.30.7":
+  "integrity" "sha512-KrRXf8nnjvcpxDFOKej4xkD7657+PClJs5cJVSG7NNoCNnjEdc46juNAQt7AyuWctuCgs6mVRc1xGctEqrjxWw=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.30.7.tgz"
+  "version" "5.30.7"
   dependencies:
-    "@typescript-eslint/types" "5.27.1"
+    "@typescript-eslint/types" "5.30.7"
     "eslint-visitor-keys" "^3.3.0"
 
 "abbrev@1":
@@ -619,6 +663,11 @@
   "integrity" "sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY="
   "resolved" "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz"
   "version" "2.0.6"
+
+"async-limiter@~1.0.0":
+  "integrity" "sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ=="
+  "resolved" "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.1.tgz"
+  "version" "1.0.1"
 
 "async@^3.2.3":
   "integrity" "sha512-spZRyzKL5l5BZQrr/6m/SqFdBN0q3OCI0f9rjfBzCMBIP4p75P620rR3gTmaksNOhmzgdxcaxdNfMy6anrbM0g=="
@@ -887,15 +936,10 @@
     "shebang-command" "^2.0.0"
     "which" "^2.0.1"
 
-"dayjs@^1.11.3":
+"dayjs@^1.11.3", "dayjs@^1.8.29":
   "integrity" "sha512-xxwlswWOlGhzgQ4TKzASQkUhqERI3egRNqgV4ScR8wlANA/A9tZ7miXa44vTTKEq5l7vWoL5G57bG3zA+Kow0A=="
   "resolved" "https://registry.npmjs.org/dayjs/-/dayjs-1.11.3.tgz"
   "version" "1.11.3"
-
-"dayjs@^1.8.29":
-  "integrity" "sha512-F4LXf1OeU9hrSYRPTTj/6FbO4HTjPKXvEIC1P2kcnFurViINCVk3ZV0xAS3XVx9MkMsXbbqlK6hjseaYbgKEHw=="
-  "resolved" "https://registry.npmjs.org/dayjs/-/dayjs-1.11.2.tgz"
-  "version" "1.11.2"
 
 "debug@^2.6.9":
   "integrity" "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA=="
@@ -3068,6 +3112,13 @@
   "integrity" "sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8="
   "resolved" "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
   "version" "1.0.2"
+
+"ws@^5.2.0":
+  "integrity" "sha512-jZArVERrMsKUatIdnLzqvcfydI85dvd/Fp1u/VOpfdDWQ4c9qWXe+VIeAbQ5FrDwciAkr+lzofXLz3Kuf26AOA=="
+  "resolved" "https://registry.npmjs.org/ws/-/ws-5.2.3.tgz"
+  "version" "5.2.3"
+  dependencies:
+    "async-limiter" "~1.0.0"
 
 "ws@^7.5.3":
   "integrity" "sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q=="
