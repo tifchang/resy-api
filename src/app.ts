@@ -51,25 +51,6 @@ const channelIds = {
     "neil": ""
 }
 
-// venuesService.updateVenue(venuePayload);
-// const resp = await runResy();
-
-
-// Initialize all scheduled messages
-// modify this to be midnight 7/21
-// const time = new Date(2022, 6, 16, 17, 4).getTime()/1000;
-// try {
-//     const result = await client.chat.scheduleMessage({
-//         channel: message.channel,
-//         text: "Summer has come and passed",
-//         post_at: time
-//         });
-
-// }
-// catch (e) {
-//     console.log(e);
-// }
-
 
 // welcome message
 app.message(/(hi|hello|hey)/, async ({ message, say }) => {
@@ -150,6 +131,59 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
     if (!isGenericMessageEvent(message)) return;
     if (message.user != "U03P3TRJ83B") {
         channelIds.neil = message.user;
+    }
+
+    // Initialize all scheduled messages
+    // modify this to be midnight 7/21
+    const time_1 = new Date(2022, 7, 19, 0, 0).getTime()/1000;
+    const time_2 = new Date(2022, 7, 19, 6, 30).getTime()/1000;
+    // message 1
+    try {
+        const result = await app.client.chat.scheduleMessage({
+            channel: message.channel,
+            text: ":love_letter: 1/2",
+            blocks: [{
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ":love_letter: 1/3 \n\n Dear Neil, \n\n Happy happy birthday my old man! :tada: One step closer to 30 is kinda scary - more naps and more back pain. But nevertheless, I'm so grateful that I get to be here today to celebrate with you. \n\n I don't know how I got so lucky to have you in my life. Thank you for making me the happiest girl. Every day I'm with you is unlike the last, I feel like I just scraped the surface of the many reasons to like you. Crybaby Chibi Chang might make her appearance today since she's so soft after writing all these letters :pleading_face:. \n\n You love games, so I built one for you. I hope you enjoy Chibi Chang, my replacement during the work day. \n\n There are so many reasons to celebrate you today; I actually keep a list of them, and you'll see some of the reasons why. \n\n Love you long time, Neil. \n\n :heart: Tiffany"
+                }
+            },
+            {
+                "type": "image",
+                "image_url": "https://i.ibb.co/f2jrGTM/Screen-Shot-2022-07-18-at-11-27-18-PM.png",
+                "alt_text": "inspiration"
+            }],
+            post_at: 1658204100
+            });
+
+    }
+    catch (e) {
+        console.log(e);
+    }
+    // message 2
+    try {
+        const result = await app.client.chat.scheduleMessage({
+            channel: message.channel,
+            text: ":love_letter: 2/2",
+            blocks: [{
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ":love_letter: 2/3 Dear Neil, \n\n One of the things I love most about you is not only how competent, smart, sharp, and humble you are, but also how you teach me about your different interests (and you're actually good at it). From ping pong, to poker, to random facts and piano songs I botch, I love seeing your world & learning from you. \n\n I may never be better than you at most of these games, but I still love how we can play a game competitively (+ we both hate losing, admit it). There is a never a dull moment with you. Really, I'm either getting my brain wrecked by trying to learn something new or I'm getting my ass handed to me (:smirk: literally). \n\n :heart: Tiffany"
+                }
+            },
+            {
+                "type": "image",
+                "image_url": "https://i.ibb.co/Rp1nX14/Screen-Shot-2022-07-18-at-11-55-16-PM.png",
+                "alt_text": "inspiration"
+            }],
+            post_at: 1658226600
+            });
+
+    }
+    catch (e) {
+        console.log(e);
     }
     
     await say(welcomeMsg);
@@ -517,7 +551,7 @@ app.action<BlockAction>({ action_id: 'time_max', block_id: 'timepicker_minmax'},
 app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, respond }) => {
     await ack();
     venuesService.updateVenue(venue);
-    runResy();
+    runResy(channelIds.tiff);
     await respond({
         "text": "Thanks for your request, I'll process it and get back to you if I find something."
     });
@@ -595,7 +629,7 @@ app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) =>
                 "block_id": "dons",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:date: Did you know I have other abilities?* \n\n That's right, Tiffany gave me some sick abilities. You mentioned once that you'd like a very specific kind of bot...why don't you give me a try? Type `/reserve` into the chat. Maybe take her on a date? \n\n *Why did she get you this? Read this note :love_letter:* \n\n Neil, all our dates are ridiculous. Every time I tell someone we went _here_ or _there_, everyone is shook someone would even take me there. I thought it was some lead conversion strategy, but I realized it was just that you only treat me to the best - and it makes me feel so loved. It took me some time and a lot of anxious thoughts to overcome the reality of your limited bandwidth, but I realized even still you try to make time for me andtreat me so well. Even beyond dates, what I've loved the most is how you never take out your phone when we're together, how you suggest things to do (and even plan wow), and how you prioritize me and my enjoyment. \n\n I wanted to build something you kind of already wanted, asked for, but couldn't do at the time. I hope this makes planning easier.  \n\n Behold, your own Resy bot, Chibi Chang.  I've preloaded it with places you love, one of our favorite spots, and L'Artusi so maybe you can get a reservation this time :kissing_heart:. Love you so much, Neil."
+                    "text": "*:date: Did you know I have other abilities?* \n\n That's right, Tiffany gave me some sick abilities. You mentioned once that you'd like a very specific kind of bot...why don't you give me a try? Type `/reserve` into the chat. Maybe take her on a date? \n\n *Why did she get you this? Read this note :love_letter:* \n\n Neil, all our dates are ridiculous. Every time I tell someone we went _here_ or _there_, everyone is shook someone would even take me there. I thought it was some lead conversion strategy, but I realized it was just that you only treat me to the best - and it makes me feel so loved. It took me some time and a lot of anxious thoughts to overcome the reality of your limited bandwidth, but I realized even still you try to make time for me and treat me so well. Even beyond dates, what I've loved the most is how you never take out your phone when we're together, how you suggest things to do (and even plan wow), and how you prioritize me and my enjoyment. \n\n I wanted to build something you kind of already wanted, asked for, but couldn't do at the time. I hope this makes planning easier.  \n\n Behold, your own Resy bot, Chibi Chang.  I've preloaded it with places you love, one of our favorite spots, and L'Artusi so maybe you can get a reservation this time :kissing_heart:. Love you so much, Neil."
                 }
             },
             {
@@ -613,10 +647,26 @@ app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) =>
     await say (resyReveal);
 });
 
+app.message(/(ghibli|concert|symphony|joe hisaishi|miyazaki)/, async ({ message, say, client }) => {
+    const ghibli = {
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "dons",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*:musical_score: :japanese_castle: I heard you like anime music...* \n\n Joe Hisaishi is the original composer for Miyazaki's films at Studio Ghibli (yes, including One Summers Day). Hisaishi rarely goes on tour, but luckily this year, he is coming to NYC at Radio City Hall on August 18th at 8PM. You and Tiffany are going to see him conduct a full symphony live with front section tickets. Get ready for this electrifying experience! :zap: \n\n *Why did she get you this? Read this note :love_letter:* \n\n Classical music + anime + classic films + live = probably one of the most ideal experiences for Neil. I'm still shook by your piano abilities and (sort of random) interest in classical music. Thank you for taking me to the Chopin concert and all those jazz concerts – live music reminds me of you so I wanted to surprise you with a once-in-a-lifetime experience that brought together your interests!"
+                }
+            }
+        ]
+    }
+    await say (ghibli);
+});
+
 const postMessage = async(str: string, rest: string) => {
     await app.client.chat.postMessage({
         text: `:star-struck: I found a reservation! You're successfully booked at ${rest}! Please login to your Resy to see details on the reservation.`,
-        channel: channelIds.tiff
+        channel: str
       });
 }
 

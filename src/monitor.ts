@@ -141,8 +141,9 @@ const regenerateHeaders = async () => {
 };
 
 
-const runResy = async () => {
+const runResy = async (id: string) => {
   console.log("running runResy");
+  neilId = id;
 // every day fetch every post
   cron.scheduleJob("*/1 * * * *", refreshAvailability);
   cron.scheduleJob("1 * * * *", regenerateHeaders);
