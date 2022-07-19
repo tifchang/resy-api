@@ -35,7 +35,7 @@ class VenuesService {
   init = async () => {
     // Read data from JSON file, this will set db.data content
     await this.db.read();
-    this.db.data ||= { venues: [] };
+    this.db.data || (this.db.data ={ venues: [] });
     this.db.data.venues.forEach((v) => {
       v.uuid ??= uuid();
       v.partySize ??= 2;
