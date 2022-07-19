@@ -55,6 +55,7 @@ const channelIds = {
 // welcome message
 app.message(/(hi|hello|hey)/, async ({ message, say }) => {
     const welcomeMsg = {
+            "text": "Title",
             "blocks": [
                 {
                     "type": "section",
@@ -566,6 +567,7 @@ app.action({ action_id: 'example_button', block_id: 'example_1'}, async ({ ack, 
 
 app.message(/(dinner|tonight)/, async ({ message, say, client }) => {
     const dons = {
+        "text": "Title",
         "blocks": [
             {
                 "type": "section",
@@ -587,6 +589,7 @@ app.message(/(dinner|tonight)/, async ({ message, say, client }) => {
 
 app.message(/(naruto|akatsuki|cloak)/, async ({ message, say, client }) => {
     const naruto = {
+        "text": "Title",
         "blocks": [
             {
                 "type": "section",
@@ -608,6 +611,7 @@ app.message(/(naruto|akatsuki|cloak)/, async ({ message, say, client }) => {
 
 app.message(/(cool girl|cool|girl)/, async ({ message, say, client }) => {
     const cool = {
+        "text": "Title",
         "blocks": [
             {
                 "type": "section",
@@ -623,6 +627,7 @@ app.message(/(cool girl|cool|girl)/, async ({ message, say, client }) => {
 
 app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) => {
     const resyReveal = {
+        "text": "Title",
         "blocks": [
             {
                 "type": "section",
@@ -647,8 +652,9 @@ app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) =>
     await say (resyReveal);
 });
 
-app.message(/(ghibli|concert|symphony|joe hisaishi|miyazaki)/, async ({ message, say, client }) => {
+app.message(/(concert|symphony|joe hisaishi|miyazaki|studio)/, async ({ message, say, client }) => {
     const ghibli = {
+        "text": "Title",
         "blocks": [
             {
                 "type": "section",
