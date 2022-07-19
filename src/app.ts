@@ -135,8 +135,8 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
 
     // Initialize all scheduled messages
     // modify this to be midnight 7/21
-    const time_1 = new Date(2022, 7, 19, 0, 0).getTime()/1000;
-    const time_2 = new Date(2022, 7, 19, 6, 30).getTime()/1000;
+    const time_1 = 1658289600;
+    const time_2 = 1658311200;
     // message 1
     try {
         const result = await app.client.chat.scheduleMessage({
@@ -154,7 +154,7 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
                 "image_url": "https://i.ibb.co/f2jrGTM/Screen-Shot-2022-07-18-at-11-27-18-PM.png",
                 "alt_text": "inspiration"
             }],
-            post_at: 1658204100
+            post_at: time_1
             });
 
     }
@@ -178,7 +178,7 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
                 "image_url": "https://i.ibb.co/Rp1nX14/Screen-Shot-2022-07-18-at-11-55-16-PM.png",
                 "alt_text": "inspiration"
             }],
-            post_at: 1658226600
+            post_at: time_2
             });
 
     }
