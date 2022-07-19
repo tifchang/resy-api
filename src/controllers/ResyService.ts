@@ -1,4 +1,4 @@
-import { BaseService } from "./BaseService";
+import { BaseService } from "./BaseService.js";
 import type { LoginResponse } from "../types/types";
 import type { SearchResponse } from "../types/types";
 import type { VenueResponse } from "../types/venue";
@@ -146,9 +146,9 @@ class ResyService extends BaseService {
     venue_id?: number;
   }) => {
     const opts = { ...(params || {}) };
-    opts.party_size ??= 2;
-    opts.lat ??= 0;
-    opts.long ??= 0;
+    opts.party_size ?? (opts.party_size = 2);
+    opts.lat ?? (opts.lat = 0);
+    opts.long ?? (opts.long = 0);
     return this.get<FindResponse>(routes.search, {
       params: opts,
       headers: this.headers,
