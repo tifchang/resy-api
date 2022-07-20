@@ -21,17 +21,6 @@ var neilId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
 
-if (! process.env.MONGODB_URI) {
-  throw new Error("MONGODB_URI is not in the environmental variables.");
-}
-mongoose.connection.on('connected', function() {
-  console.log('Success: connected to MongoDb!');
-});
-mongoose.connection.on('error', function() {
-  console.log('Error connecting to MongoDb. Check MONGODB_URI in env.sh');
-  process.exit(1);
-});
-mongoose.connect(process.env.MONGODB_URI);
 
 Reservations.find()
     .then((res) => {

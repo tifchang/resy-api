@@ -6,6 +6,9 @@ import runResy from './monitor.js';
 import { isGenericMessageEvent } from './utils/helpers.js';
 import VenuesService from "./controllers/VenuesService.js";
 const venuesService = new VenuesService();
+const uri = process.env.MONGODB_URI || "";
+import mongoose from 'mongoose';
+
 // initializes app
 const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -14,6 +17,18 @@ const app = new App({
     socketMode: true,
     appToken: process.env.APP_TOKEN
 });
+if (! process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is not in the environmental variables.");
+  }
+mongoose.connection.on('connected', function() {
+console.log('Success: connected to MongoDb!');
+});
+mongoose.connection.on('error', function() {
+console.log('Error connecting to MongoDb. Check MONGODB_URI in env.sh');
+process.exit(1);
+});
+mongoose.connect(process.env.MONGODB_URI);
+
 app.use(async ({ next }) => {
     await next();
 });

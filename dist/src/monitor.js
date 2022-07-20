@@ -7,7 +7,6 @@ import dayjs from "dayjs";
 import 'dotenv/config';
 import postMessage from "./app.js";
 import Reservations from "../models/models.js";
-import mongoose from 'mongoose';
 const email = process.env.RESY_EMAIL;
 const password = process.env.RESY_PASSWORD;
 const service = new ResyService({
@@ -17,17 +16,6 @@ const service = new ResyService({
 var neilId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
-if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI is not in the environmental variables.");
-}
-mongoose.connection.on('connected', function () {
-    console.log('Success: connected to MongoDb!');
-});
-mongoose.connection.on('error', function () {
-    console.log('Error connecting to MongoDb. Check MONGODB_URI in env.sh');
-    process.exit(1);
-});
-mongoose.connect(process.env.MONGODB_URI);
 Reservations.find()
     .then((res) => {
     console.log("All restaurants", res);
