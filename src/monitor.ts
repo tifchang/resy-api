@@ -8,6 +8,8 @@ import dayjs from "dayjs";
 import type { EnhancedSlot } from "./types/find";
 import 'dotenv/config';
 import postMessage from "./app.js";
+import Reservations from "../models/models.js";
+import mongoose from 'mongoose';
 
 const email = process.env.RESY_EMAIL!;
 const password = process.env.RESY_PASSWORD!;
@@ -18,6 +20,34 @@ const service = new ResyService({
 var neilId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
+
+if (! process.env.MONGODB_URI) {
+  throw new Error("MONGODB_URI is not in the environmental variables.");
+}
+mongoose.connection.on('connected', function() {
+  console.log('Success: connected to MongoDb!');
+});
+mongoose.connection.on('error', function() {
+  console.log('Error connecting to MongoDb. Check MONGODB_URI in env.sh');
+  process.exit(1);
+});
+mongoose.connect(process.env.MONGODB_URI);
+
+Reservations.find()
+    .then((res) => {
+      console.log("All restaurants", res);
+      if (res.length === 0) {
+        console.log("No results");
+        return;
+      }
+      // do something with the results
+      console.log("TYPEOF RES: " + res.length);
+      // return(res);
+    })
+    .catch((err) => {
+      console.log("Error in finding restaurants", err)
+  })
+
 
 const parsePossibleSlots = async (
   venue: VenueToWatch,
@@ -67,7 +97,7 @@ const parsePossibleSlots = async (
     await venuesService.updateWatchedVenue(venue);
   }
 };
-const refreshAvailabilityForVenue = async (venue: VenueToWatch) => {
+const refreshAvailabilityForVenue = async (venue) => {
   try {
     const availableDates = await service.getAvailableDatesForVenue(
       venue.id,
@@ -115,12 +145,11 @@ const refreshAvailability = async () => {
 
   await venuesService.init();
   const venuesToSearchFor = await venuesService.getWatchedVenues();
-  // You get more availability if you have an amex card and you log in
 
   for (const venue of venuesToSearchFor) {
-    await refreshAvailabilityForVenue(venue);
+      await refreshAvailabilityForVenue(venue);
   }
-  await venuesService.save();
+  // await venuesService.save();
   log.info("Finished finding reservations");
 };
 

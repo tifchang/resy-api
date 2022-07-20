@@ -19,6 +19,8 @@
     "dotenv": "^16.0.1",
     "lowdb": "^3.0.0",
     "moment": "^2.29.3",
+    "mongodb": "^4.8.0",
+    "mongoose": "^6.4.5",
     "node-schedule": "^2.1.0",
     "nodemon": "^2.0.19",
     "ts-node": "^10.8.1",

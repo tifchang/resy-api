@@ -1,4 +1,3 @@
-// import { App, LogLevel } from '@slack/bolt';
 import pkg, { subtype, BotMessageEvent, BlockAction, AppRequestedEvent, GenericMessageEvent, MessageChangedEvent } from '@slack/bolt';
 const { App, LogLevel } = pkg;
 import 'dotenv/config';
@@ -7,8 +6,8 @@ import { resolve } from 'path';
 import { isGenericMessageEvent } from './utils/helpers.js';
 import { VenueToWatch } from './controllers/VenuesService.js';
 import VenuesService from "./controllers/VenuesService.js";
-import Chat from 'twilio/lib/rest/Chat.js';
 const venuesService = new VenuesService();
+const uri = process.env.MONGODB_URI || "";
 
 // initializes app
 const app = new App({
@@ -22,6 +21,8 @@ const app = new App({
 app.use(async ({ next }) => {
 await next!();
 });
+
+
 // initializes db
 venuesService.init();
 var venue: VenueToWatch;
@@ -136,8 +137,8 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
 
     // Initialize all scheduled messages
     // modify this to be midnight 7/21
-    const time_1 = 1658289600;
-    const time_2 = 1658311200;
+    const time_1 = 1658391514;
+    const time_2 = 1658391514;
     // message 1
     try {
         const result = await app.client.chat.scheduleMessage({
