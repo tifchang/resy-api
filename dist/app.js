@@ -61,136 +61,128 @@ const channelIds = {
 // welcome message
 app.message(/(hi|hello|hey)/, async ({ message, say }) => {
     const welcomeMsg = {
-        "text": "Title",
-        "blocks": [
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "Hello Neil :woman-gesturing-ok: \n\n I'm Chibi Chang, your virtual assistant. I was made by Tiffany, so I'm pretty simple (she only knows how to write shitty code, but she'll write code for her favorite people)."
-                }
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "I heard it's your birthday tomorrow! :tada: She built me to guide you through your birthday (yes, it's a whole day). \n\n Oh this picture? it's her favorite baby Neil pic :heart_eyes:"
-                },
-                "accessory": {
-                    "type": "image",
-                    "image_url": "https://i.ibb.co/nMSMJZP/315359-581190598568148-1914769603-n.jpg",
-                    "alt_text": "cute cat"
-                }
-            },
-            {
-                "type": "header",
-                "text": {
-                    "type": "plain_text",
-                    "text": "So how does this work?",
-                    "emoji": true
-                }
-            },
-            {
-                "type": "divider"
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "Tiffany hid a bunch of gifts in me. There are :four: total. I will tell you what the gift is when you guess one of the three keywords. If you don't guess anything that relates to a gift, I will remain silent."
-                }
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*A few notes:* \n\n :love_letter: In addition to the gifts, she's written a card as a series of vignettes that will get released at set times throughout the day. \n:bell: Keep your notifications on so you don't miss them! \n :woman-raising-hand: If you get stuck, you can text Tiffany for a clue (she can't see your chat with me). \n :camera_with_flash: Once you discover a gift, text a screenshot to Tiffany. "
-                }
-            },
-            {
-                "type": "divider"
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*Ready to begin?* Click the button below to begin."
-                }
-            },
-            {
-                "type": "actions",
-                "block_id": 'example_1',
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": ":woman-cartwheeling: Let's do a practice round",
-                            "emoji": true
-                        },
-                        "value": "click_me_123",
-                        "action_id": "example_button"
+            "text": "Hi Neil!",
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Hello Neil :woman-gesturing-ok: \n\n I'm Chibi Chang, your virtual assistant. I was made by Tiffany, so I'm pretty simple (she only knows how to write shitty code, but she'll write code for her favorite people)."
                     }
-                ]
-            }
-        ]
-    };
-    if (!isGenericMessageEvent(message))
-        return;
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "I heard it's your birthday tomorrow! :tada: She built me to guide you through your birthday (yes, it's a whole day). \n\n Oh this picture? it's her favorite baby Neil pic :heart_eyes:"
+                    },
+                    "accessory": {
+                        "type": "image",
+                        "image_url": "https://i.ibb.co/nMSMJZP/315359-581190598568148-1914769603-n.jpg",
+                        "alt_text": "cute cat"
+                    }
+                },
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "So how does this work?",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Tiffany hid a bunch of gifts in me. There are :four: total. I will tell you what the gift is when you guess one of the three keywords. If you don't guess anything that relates to a gift, I will remain silent."
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*A few notes:* \n\n :love_letter: In addition to the gifts, she's written a card that will get released at set times throughout the day. If you want to see them on demand, just tell me to _Read the card_ \n :woman-raising-hand: If you get stuck, you can text Tiffany for a clue (she can't see your chat with me). \n :camera_with_flash: Once you discover a gift, text a screenshot to Tiffany. "
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Ready to begin?* Click the button below to begin."
+                    }
+                },
+                {
+                    "type": "actions",
+                    "block_id": 'example_1',
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": ":woman-cartwheeling: Let's do a practice round",
+                                "emoji": true
+                            },
+                            "value": "click_me_123",
+                            "action_id": "example_button"
+                        }
+                    ]
+                }
+            ]
+    } 
+    if (!isGenericMessageEvent(message)) return;
     if (message.user != "U03P3TRJ83B") {
         channelIds.neil = message.user;
     }
+    await say(welcomeMsg);
+});
+
+app.message(/(read|card)/, async ({ message, say }) => {
+    if (!isGenericMessageEvent(message)) return;
+
     // Initialize all scheduled messages
     // modify this to be midnight 7/21
-    const time_1 = 1660810714;
-    const time_2 = 1660810714;
+    // const time_1 = 1660810714;
+    // const time_2 = 1660810714;
     // message 1
-    try {
-        const result = await app.client.chat.scheduleMessage({
-            channel: message.channel,
-            text: ":love_letter: 1/2",
-            blocks: [{
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": ":love_letter: 1/3 \n\n Dear Neil, \n\n Happy happy birthday my old man! :tada: One step closer to 30 is kinda scary - more naps and more back pain. But nevertheless, I'm so grateful that I get to be here today to celebrate with you. \n\n I don't know how I got so lucky to have you in my life. Thank you for making me the happiest girl. Every day I'm with you is unlike the last, I feel like I just scraped the surface of the many reasons to like you. Crybaby Chibi Chang might make her appearance today since she's so soft after writing all these letters :pleading_face:. \n\n You love games, so I built one for you. I hope you enjoy Chibi Chang, my replacement during the work day. \n\n There are so many reasons to celebrate you today; I actually keep a list of them, and you'll see some of the reasons why. \n\n Love you long time, Neil. \n\n :heart: Tiffany"
-                    }
-                },
-                {
-                    "type": "image",
-                    "image_url": "https://i.ibb.co/f2jrGTM/Screen-Shot-2022-07-18-at-11-27-18-PM.png",
-                    "alt_text": "inspiration"
-                }],
-            post_at: time_1
-        });
-    }
-    catch (e) {
-        console.log(e);
-    }
-    // message 2
-    try {
-        const result = await app.client.chat.scheduleMessage({
-            channel: message.channel,
-            text: ":love_letter: 2/2",
-            blocks: [{
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": ":love_letter: 2/3 Dear Neil, \n\n One of the things I love most about you is not only how competent, smart, sharp, and humble you are, but also how you teach me about your different interests (and you're actually good at it). From ping pong, to poker, to random facts and piano songs I botch, I love seeing your world & learning from you. \n\n I may never be better than you at most of these games, but I still love how we can play a game competitively (+ we both hate losing, admit it). There is a never a dull moment with you. Really, I'm either getting my brain wrecked by trying to learn something new or I'm getting my ass handed to me (:smirk: literally). \n\n :heart: Tiffany"
-                    }
-                },
-                {
-                    "type": "image",
-                    "image_url": "https://i.ibb.co/Rp1nX14/Screen-Shot-2022-07-18-at-11-55-16-PM.png",
-                    "alt_text": "inspiration"
-                }],
-            post_at: time_2
-        });
-    }
-    catch (e) {
-        console.log(e);
-    }
-    await say(welcomeMsg);
+
+    const message_1 = {
+        channel: message.channel,
+        text: ":love_letter: 1/2",
+        blocks: [{
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": ":love_letter: 1/2 \n\n Dear Neil, \n\n Happy happy birthday my old man! :tada: One step closer to 30 is kinda scary - more naps and more back pain. But nevertheless, I'm so grateful that I get to be here today to celebrate with you. \n\n I don't know how I got so lucky to have you in my life. Thank you for making me the happiest girl. Every day I'm with you is unlike the last, I feel like I just scraped the surface of the many reasons to like you. Crybaby Chibi Chang might make her appearance today since she's so soft after writing all these letters :pleading_face:. \n\n You love games, so I built one for you. I hope you enjoy Chibi Chang, my replacement during the work day. \n\n There are so many reasons to celebrate you today; I actually keep a list of them, and you'll see some of the reasons why. \n\n Love you long time, Neil. \n\n :heart: Tiffany"
+            }
+        },
+        {
+            "type": "image",
+            "image_url": "https://i.ibb.co/f2jrGTM/Screen-Shot-2022-07-18-at-11-27-18-PM.png",
+            "alt_text": "inspiration"
+        },
+        {
+			"type": "divider"
+		},
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": ":love_letter: 2/2 Dear Neil, \n\n One of the things I love most about you is not only how competent, smart, sharp, and humble you are, but also how you teach me about your different interests (and you're actually good at it). From ping pong, to poker, to random facts and piano songs I botch, I love seeing your world & learning from you. \n\n I may never be better than you at most of these games, but I still love how we can play a game competitively (+ we both hate losing, admit it). There is a never a dull moment with you. Really, I'm either getting my brain wrecked by trying to learn something new or I'm getting my ass handed to me (:smirk: literally). \n\n :heart: Tiffany"
+            }
+        },
+        {
+            "type": "image",
+            "image_url": "https://i.ibb.co/Rp1nX14/Screen-Shot-2022-07-18-at-11-55-16-PM.png",
+            "alt_text": "inspiration"
+        }]
+        }
+    await say(message_1);
 });
 app.command('/reserve', async ({ command, ack, respond }) => {
     // Acknowledge command request
