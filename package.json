@@ -8,8 +8,7 @@
     "dev": "yarn cnode ./src/index.ts",
     "monitor": "yarn cnode ./src/monitor.ts",
     "build": "tsc -p .",
-    "start": "node ./src/monitor.ts && node dist/app.js",
-    "postinstall": "yarn build"
+    "start": "node ./src/monitor.js && node dist/app.js"
   },
   "dependencies": {
     "@slack/bolt": "^3.12.0",
