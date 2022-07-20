@@ -158,7 +158,7 @@ app.message(/(read|card)/, async ({ message, say }) => {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": ":love_letter: 1/2 \n\n Dear Neil, \n\n Happy happy birthday my old man! :tada: One step closer to 30 is kinda scary - more naps and more back pain. But nevertheless, I'm so grateful that I get to be here today to celebrate with you. \n\n I don't know how I got so lucky to have you in my life. Thank you for making me the happiest girl. Every day I'm with you is unlike the last, I feel like I just scraped the surface of the many reasons to like you. Crybaby Chibi Chang might make her appearance today since she's so soft after writing all these letters :pleading_face:. \n\n You love games, so I built one for you. I hope you enjoy Chibi Chang, my replacement during the work day. \n\n There are so many reasons to celebrate you today; I actually keep a list of them, and you'll see some of the reasons why. \n\n Love you long time, Neil. \n\n :heart: Tiffany"
+                "text": ":love_letter: 1/2 \n\n Dear Neil, \n\n Happy happy birthday my old man! :tada: One step closer to 30 is kinda scary - more naps and more back pain. But nevertheless, I'm so grateful that I get to be here today to celebrate with you. \n\n I don't know how I got so lucky to have you in my life. Thank you for making me the happiest girl. Every day I'm with you is unlike the last, I feel like I just scraped the surface of the many reasons to like you. Crybaby Chibi Chang might make her appearance today since she's so soft after writing all these letters :pleading_face:. \n\n You love games, so I built one for you. Chibi Chang was supposed to be my replacement during the work day, but from what I've learned about EAs, they just breakdown and give up on you the day before you need them. \n\n There are so many reasons to celebrate you today; I actually keep a list of them, and you'll see some of the reasons why. \n\n Love you long time, Neil. \n\n :heart: Tiffany"
             }
         },
         {
@@ -173,7 +173,7 @@ app.message(/(read|card)/, async ({ message, say }) => {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": ":love_letter: 2/2 Dear Neil, \n\n One of the things I love most about you is not only how competent, smart, sharp, and humble you are, but also how you teach me about your different interests (and you're actually good at it). From ping pong, to poker, to random facts and piano songs I botch, I love seeing your world & learning from you. \n\n I may never be better than you at most of these games, but I still love how we can play a game competitively (+ we both hate losing, admit it). There is a never a dull moment with you. Really, I'm either getting my brain wrecked by trying to learn something new or I'm getting my ass handed to me (:smirk: literally). \n\n :heart: Tiffany"
+                "text": ":love_letter: 2/2 Dear Neil, \n\n I didn't have a gift attached to this one, but I still felt it was important to write. One of the things I love most about you is not only how competent, smart, sharp, and humble you are, but also how you teach me about your different interests (and you're actually good at it). From ping pong, to poker, to random facts and piano songs I botch, I love seeing your world & learning from you. \n\n I may never be better than you at most of these games, but I still love how we can play a game competitively (+ we both hate losing, admit it). There is a never a dull moment with you. Really, I'm either getting my brain wrecked by trying to learn something new or I'm getting my ass handed to me (:smirk: literally). I hope I get to teach you something just as interesting - just say the word. \n\n :heart: Tiffany"
             }
         },
         {
@@ -545,7 +545,7 @@ app.action({ action_id: 'submit_button', block_id: 'submit_1' }, async ({ ack, r
 app.action({ action_id: 'example_button', block_id: 'example_1' }, async ({ ack, respond }) => {
     await ack();
     await respond({
-        "text": "Tiffany already told you that she was taking you out tonight. Maybe try ask me _What's for dinner?_ or _Where are we going tonight?_ Since she's giving you a practice round, I'll only tell you half the truth. You'll get the rest there :wink:"
+        "text": "Tiffany already told you that she was taking you out tomorrow night. Maybe try ask me _What's for dinner?_ or _Where are we going tomorrow night?_ Since she's giving you a practice round, I'll only tell you half the truth. You'll get the rest there :wink:"
     });
 });
 app.message(/(dinner|tonight)/, async ({ message, say, client }) => {
@@ -631,7 +631,7 @@ app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) =>
     };
     await say(resyReveal);
 });
-app.message(/(concert|symphony|joe hisaishi|miyazaki|studio)/, async ({ message, say, client }) => {
+app.message(/(concert|symphony|joe hisaishi|miyazaki|studio|music)/, async ({ message, say, client }) => {
     const ghibli = {
         "text": "Title",
         "blocks": [
@@ -640,7 +640,7 @@ app.message(/(concert|symphony|joe hisaishi|miyazaki|studio)/, async ({ message,
                 "block_id": "dons",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:musical_score: :japanese_castle: I heard you like anime music...* \n\n Joe Hisaishi is the original composer for Miyazaki's films at Studio Ghibli (yes, including One Summers Day). Hisaishi rarely goes on tour, but luckily this year, he is coming to NYC at Radio City Hall on August 18th at 8PM. You and Tiffany are going to see him conduct a full symphony live with front section tickets. Get ready for this electrifying experience! :zap: \n\n *Why did she get you this? Read this note :love_letter:* \n\n Classical music + anime + classic films + live = probably one of the most ideal experiences for Neil. I'm still shook by your piano abilities and (sort of random) interest in classical music. Thank you for taking me to the Chopin concert and all those jazz concerts – live music reminds me of you so I wanted to surprise you with a once-in-a-lifetime experience that brought together your interests!"
+                    "text": "*:musical_score: :japanese_castle: I heard you like anime music...* \n\n Joe Hisaishi is the original composer for Miyazaki's films at Studio Ghibli (yes, including One Summers Day). Hisaishi rarely goes on tour, but luckily this year, he is coming to NYC at Radio City Hall on August 18th at 8PM. You and Tiffany are going to see him conduct a full symphony live with front section tickets. Get ready for this electrifying experience! :zap: \n\n *Why did she get you this? Read this note :love_letter:* \n\n Classical music + anime + classic films + live = probably one of the most ideal experiences for Neil. I'm still shook by your piano abilities and (sort of random) interest in classical music. Beyond this as your interest, it reminds me of how interesting you are & how when you are interested in something and put your mind to it, you can do some crazy stuff like learn how to play piano in less than a year. Thank you for taking me to the Chopin concert and all those jazz concerts – live music reminds me of you so I hope you enjoy this once-in-a-lifetime experience that brings together your interests!"
                 }
             }
         ]
