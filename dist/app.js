@@ -649,6 +649,6 @@ const postMessage = async (str, rest) => {
 export default postMessage;
 (async () => {
     // Start your app
-    await app.start(Number(process.env.PORT) || 6000);
+    await app.start(process.env.PORT || 6000);
     console.log('⚡️ Slack app is running!');
 })();

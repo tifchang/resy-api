@@ -42,5 +42,12 @@
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^2.6.2"
+  },
+  "devDependencies": {
+  },
+  "engines": {
+    "node": "16.x",
+    "npm": "8.x",
+    "yarn": "1.x"
   }
 }
