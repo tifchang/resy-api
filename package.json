@@ -8,7 +8,7 @@
     "dev": "yarn cnode ./src/index.ts",
     "monitor": "yarn cnode ./src/monitor.ts",
     "build": "tsc -p .",
-    "start": "node dist/app.js",
+    "start": "node ./src/monitor.ts && node dist/app.js",
     "postinstall": "yarn build"
   },
   "dependencies": {
