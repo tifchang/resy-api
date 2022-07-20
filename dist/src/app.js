@@ -127,8 +127,8 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
     }
     // Initialize all scheduled messages
     // modify this to be midnight 7/21
-    const time_1 = 1658391514;
-    const time_2 = 1658391514;
+    const time_1 = 1689927514;
+    const time_2 = 1689927514;
     // message 1
     try {
         const result = await app.client.chat.scheduleMessage({
