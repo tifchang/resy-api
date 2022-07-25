@@ -22,22 +22,6 @@ const textController = new TextService();
 const venuesService = new VenuesService();
 
 
-Reservations.find()
-    .then((res) => {
-      console.log("All restaurants", res);
-      if (res.length === 0) {
-        console.log("No results");
-        return;
-      }
-      // do something with the results
-      console.log("TYPEOF RES: " + res.length);
-      // return(res);
-    })
-    .catch((err) => {
-      console.log("Error in finding restaurants", err)
-  })
-
-
 const parsePossibleSlots = async (
   venue: VenueToWatch,
   possibleSlots: EnhancedSlot[]
@@ -81,9 +65,11 @@ const parsePossibleSlots = async (
     });
 
     venue.reservationDetails = bookingResponse.data;
-    postMessage(neilId, venue.name);
+    venue.notified = true;
+    venue.shouldBook = false;
     log.info(`Successfully booked at ${venue.name}`);
     await venuesService.updateWatchedVenue(venue);
+    await postMessage(neilId, venue.name);
   }
 };
 const refreshAvailabilityForVenue = async (venue) => {
@@ -134,6 +120,7 @@ const refreshAvailability = async () => {
 
   await venuesService.init();
   const venuesToSearchFor = await venuesService.getWatchedVenues();
+  console.log(venuesToSearchFor);
 
   for (const venue of venuesToSearchFor) {
       await refreshAvailabilityForVenue(venue);
@@ -170,5 +157,7 @@ const runResy = async (id: string) => {
     await refreshAvailability();
   });
 };
+
+// runResy("U03P3TRJ83B");
 
 export default runResy;

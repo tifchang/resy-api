@@ -44,7 +44,7 @@ var venue: VenueToWatch;
 venue = {
     "name": "",
     "id": 0,
-    "notified": true,
+    "notified": false,
     "minTime": "18:00",
     "preferredTime": "19:00",
     "maxTime": "20:00",
@@ -59,14 +59,14 @@ const uuids = {
     "25973": "c28d7bb3-0c24-4da7-97a3-1d6c6ff34535",
     "42534": "e8649fc3-f506-47e5-ba6a-d35b364016f2",
     "35676": "5442af91-5983-4f89-8da1-3d38dec99998",
-    "5771": "619fe279-097a-4ebf-a558-f71dec5cf8e6"
+    "5771": "171000b0-2ccc-47bd-9c34-e46afdce2221"
 }
 
 const channelIds = {
     "tiff": "U03P3TRJ83B",
     "neil": ""
 }
-
+var channelIdSender = "";
 
 // welcome message
 app.message(/(hi|hello|hey)/, async ({ message, say }) => {
@@ -146,6 +146,7 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
             ]
     } 
     if (!isGenericMessageEvent(message)) return;
+    channelIdSender = message.user;
     if (message.user != "U03P3TRJ83B") {
         channelIds.neil = message.user;
     }
@@ -154,13 +155,6 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
 
 app.message(/(read|card)/, async ({ message, say }) => {
     if (!isGenericMessageEvent(message)) return;
-
-    // Initialize all scheduled messages
-    // modify this to be midnight 7/21
-    // const time_1 = 1660810714;
-    // const time_2 = 1660810714;
-    // message 1
-
     const message_1 = {
         channel: message.channel,
         text: ":love_letter: 1/2",
@@ -498,6 +492,11 @@ app.command('/reserve', async ({ command, ack, respond }) => {
     await respond (resyForm);
 });
 
+app.command('/res', async({ command, ack, respond }) => {
+    await ack();
+
+});
+
 
 // select restaurant
 app.action<BlockAction>({ action_id: 'select_restaurant', block_id: 'restaurants_1'}, async ({ body, ack }) => {
@@ -506,29 +505,29 @@ app.action<BlockAction>({ action_id: 'select_restaurant', block_id: 'restaurants
     venue.id = parseInt(key);
     venue.name = body.state?.values.restaurants_1.select_restaurant.selected_option?.text.text || venue.name;
     venue.uuid = uuids[key];
-    console.log("VENUE ID: " + venue.id);
-    console.log("VENUE NAME: " + venue.name);
-    console.log("VENUE UUID: " + venue.uuid);
+    // console.log("VENUE ID: " + venue.id);
+    // console.log("VENUE NAME: " + venue.name);
+    // console.log("VENUE UUID: " + venue.uuid);
 });
 // select party size
 app.action<BlockAction>({ action_id: 'select_party', block_id: 'party_1'}, async ({ body, ack }) => {
     await ack();
     venue.partySize = parseInt(body.state?.values.party_1.select_party.selected_option?.value || "2");
-    console.log("PARTYSIZE: " + venue.partySize);
+    // console.log("PARTYSIZE: " + venue.partySize);
 });
 
 // select ideal date
 app.action<BlockAction>({ action_id: 'date_1', block_id: 'datepickers_1'}, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_1.selected_date || "");
-    console.log("ALLOWED DATES: " + venue.allowedDates);
+    // console.log("ALLOWED DATES: " + venue.allowedDates);
 });
 
 // select backup date
 app.action<BlockAction>({ action_id: 'date_2', block_id: 'datepickers_1'}, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_2.selected_date || "");
-    console.log("ALLOWED DATES: " + venue.allowedDates);
+    // console.log("ALLOWED DATES: " + venue.allowedDates);
 });
 
 // select ideal time
@@ -555,8 +554,9 @@ app.action<BlockAction>({ action_id: 'time_max', block_id: 'timepicker_minmax'},
 
 app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, respond }) => {
     await ack();
-    venuesService.updateVenue(venue);
-    runResy(channelIds.tiff);
+    await venuesService.updateVenue(venue);
+    console.log("Updating venue:", venue);
+    await runResy(channelIdSender);
     await respond({
         "text": "Thanks for your request, I'll process it and get back to you if I find something."
     });
@@ -621,7 +621,7 @@ app.message(/(cool girl|cool|girl)/, async ({ message, say, client }) => {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:bikini: New outfit?* She might already have it on, but cool girl can only reveal her gift IRL, she'll see you in bed tonight :smirk: \n\n *Read this note :love_letter:* \n\n I kept a Trello board with notes and thoughts from each of our early dates. Here are some you'd appreciate: \n\n :heart: when we got back to my place, mans couldn't wait and basically we made out in the lobby but my ass was on the heater and I swear I have burn marks on my butt. It was kinda hot, he's pretty hot. \n :heart: this could be stockholm but he's also actively interviewing at Citadel which idk it just gets me going \n :heart: hell yeah his body and 🍆 are 👌🏼 would feast \n :heart: I told him I would drop his ass so fast if I walked in and he had the patagonia MS vest on, so he went to his closet grabbed it and wore it to sleep for the rest of the night. 💀 ngl the vest…kinda turned me on? \n :heart: had probably one of the best first dates, went to a whiskey tasting and got cocktails in Tribeca then went back to his place played ping pong and fooked. He was honestly a good blend of everything: smart, driven, relaxed, funny (very), has depth, social, and also very sweet. He kicked my ass in ping pong using his non dominant hand wtf but also dtf."
+                    "text": "*:bikini: New outfit?* She might already have it on, but cool girl can only reveal her gift IRL, she'll see you in bed tonight :smirk: \n\n *Read this note :love_letter:* \n\n I kept a Trello board with notes and thoughts from each of our early dates. Here are some you'd appreciate: \n\n :heart: when we got back to my place, mans couldn't wait and basically we made out in the lobby but my ass was on the heater and I swear I have burn marks on my butt. It was kinda hot. \n :heart: this could be stockholm but he's also actively interviewing at Citadel which idk it just gets me going \n :heart: hell yeah his body and 🍆 are 👌🏼 would feast \n :heart: had probably one of the best first dates, went to a whiskey tasting and got cocktails in Tribeca then went back to his place played ping pong and fooked. He was honestly a good blend of everything: smart, driven, relaxed, funny (very), has depth, social, and also very sweet. He kicked my ass in ping pong using his non dominant hand wtf but also dtf."
                 }
             }
         ]

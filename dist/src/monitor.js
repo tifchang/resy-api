@@ -6,7 +6,6 @@ import VenuesService from "./controllers/VenuesService.js";
 import dayjs from "dayjs";
 import 'dotenv/config';
 import postMessage from "./app.js";
-import Reservations from "../models/models.js";
 const email = process.env.RESY_EMAIL;
 const password = process.env.RESY_PASSWORD;
 const service = new ResyService({
@@ -16,20 +15,6 @@ const service = new ResyService({
 var neilId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
-Reservations.find()
-    .then((res) => {
-    console.log("All restaurants", res);
-    if (res.length === 0) {
-        console.log("No results");
-        return;
-    }
-    // do something with the results
-    console.log("TYPEOF RES: " + res.length);
-    // return(res);
-})
-    .catch((err) => {
-    console.log("Error in finding restaurants", err);
-});
 const parsePossibleSlots = async (venue, possibleSlots) => {
     const dateToCheck = possibleSlots[0].date.start;
     log.info(`Found ${possibleSlots.length} valid open slots on ${dateToCheck} for ${venue.name}`);
@@ -65,9 +50,11 @@ const parsePossibleSlots = async (venue, possibleSlots) => {
             source_id: "resy.com-venue-details",
         });
         venue.reservationDetails = bookingResponse.data;
-        postMessage(neilId, venue.name);
+        venue.notified = true;
+        venue.shouldBook = false;
         log.info(`Successfully booked at ${venue.name}`);
         await venuesService.updateWatchedVenue(venue);
+        await postMessage(neilId, venue.name);
     }
 };
 const refreshAvailabilityForVenue = async (venue) => {
@@ -107,6 +94,7 @@ const refreshAvailability = async () => {
     log.info("Finding reservations");
     await venuesService.init();
     const venuesToSearchFor = await venuesService.getWatchedVenues();
+    console.log(venuesToSearchFor);
     for (const venue of venuesToSearchFor) {
         await refreshAvailabilityForVenue(venue);
     }
@@ -137,4 +125,5 @@ const runResy = async (id) => {
         await refreshAvailability();
     });
 };
+// runResy("U03P3TRJ83B");
 export default runResy;

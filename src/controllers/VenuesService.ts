@@ -5,6 +5,8 @@ import { v4 as uuid } from "uuid";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import Reservations from "../../models/models.js";
 import { Reservation } from "src/types/types.js";
+import runResy from '../monitor.js';
+import log from "../log.js";
 
 export interface VenueToWatch {
   name: string;
@@ -107,40 +109,9 @@ class VenuesService {
     // return (this.db.data?.venues || []).filter(
     //   (v) => !v.reservationDetails && (v.shouldBook || !v.notified)
     // );
-    var reservations = await Reservations.find({"shouldBook": true, "notified": false}).exec();
+    // {"shouldBook": true, "notified": false}
+    var reservations = await Reservations.find({shouldBook: true, notified: false}).exec();
     return reservations;
-    var venues = [];
-    // for (const r of reservations) {
-    //   var venue: VenueToWatch = {
-    //     name: r.name || "",
-    //     id: r.id,
-    //     notified: r.notified || false,
-    //     shouldBook: r.shouldBook || true,
-    //     reservationDetails: r.reservationDetails,
-    //     minTime: r.minTime || "",
-    //     preferredTime: r.preferredTime || "",
-    //     maxTime: r.maxTime || "",
-    //     uuid: r.uuid || "",
-    //     partySize: r.partySize || 2,
-    //     allowedDates: r.allowedDates || []
-    //   }
-    //   venues.push(venue);
-    // }
-    // Reservations.find({
-    //   "shouldBook": true,
-    //   "notified": false
-    // }).then((res) => {
-    //     console.log("All restaurants", res);
-    //     // if (res.length === 0) {
-    //     //   console.log("No results");
-    //     //   return;
-    //     // }
-    //     // do something with the results
-    //     return(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log("Error in finding restaurants", err)
-    // })
   };
 
   addWatchedVenue = async (venue: VenueToWatch) => {
@@ -163,7 +134,7 @@ class VenuesService {
     }
     var res = new Reservations(newRes);
     res.save().then((saved) => {
-      console.log("New venue saved in DB");
+      log.info("New venue saved in DB");
     })
     .catch((err) => { console.log("Error occured in saving", err)})
 
@@ -194,39 +165,40 @@ class VenuesService {
       reservationDetails: venue.reservationDetails
     }).then((res) => {
       if (res === null) {
-        console.log("No results");
+       log.error("No results");
         return;
       }
       // do something with the results
-      console.log("updating this restaurant", res.name);
+      log.info("updating this restaurant", res.name);
       return;
     })
     .catch((err) => {
-      console.log("Error in updating restaurant", err)
+      log.info("Error in updating restaurant", err)
     })
 
   };
 
   updateVenue = async (venue: VenueToWatch) => {
-  //   const venues = this.db.data!.venues || [];
-  //   for (let i = 0; i < venues.length; i++) {
-  //     if (venues[i].id === venue.id) {
-  //       venues[i].minTime = venue.minTime;
-  //       venues[i].maxTime = venue.maxTime;
-  //       venues[i].preferredTime = venue.preferredTime;
-  //       venues[i].partySize = venue.partySize;
-  //       venues[i].allowedDates = venue.allowedDates;
-  //       venues[i].shouldBook = true;
-  //       break;
-  //     }
-  //   }
-  //   if (venues === []) {
-  //     this.addWatchedVenue(venue);
-  //   };
-  //   await this.save();
-
+  // LOCAL FILE CHANGES --
+    //   const venues = this.db.data!.venues || [];
+    //   for (let i = 0; i < venues.length; i++) {
+    //     if (venues[i].id === venue.id) {
+    //       venues[i].minTime = venue.minTime;
+    //       venues[i].maxTime = venue.maxTime;
+    //       venues[i].preferredTime = venue.preferredTime;
+    //       venues[i].partySize = venue.partySize;
+    //       venues[i].allowedDates = venue.allowedDates;
+    //       venues[i].shouldBook = true;
+    //       break;
+    //     }
+    //   }
+    //   if (venues === []) {
+    //     this.addWatchedVenue(venue);
+    //   };
+    //   await this.save();
+    
     Reservations.findOneAndUpdate({
-      id: venue.id
+      uuid: venue.uuid
     }, {
       name: venue.name,
       id: venue.id,
@@ -240,15 +212,16 @@ class VenuesService {
       reservationDetails: venue.reservationDetails
     }).then((res) => {
       if (res === null) {
-        console.log("No results");
+       log.error("No results");
         return;
       }
       // do something with the results
-      console.log("updating this restaurant", res.name);
+      log.info("✅ Updated", res.name, "in MongoDB.");
+      log.info("🤖 Now checking Resy...");
       return;
     })
     .catch((err) => {
-      console.log("Error in updating restaurant", err)
+      log.error("❌ Error in updating restaurant", err)
     })
   }
 
