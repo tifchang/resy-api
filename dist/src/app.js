@@ -56,6 +56,7 @@ const channelIds = {
     "tiff": "U03P3TRJ83B",
     "neil": ""
 };
+var channelIdSender = "";
 // welcome message
 app.message(/(hi|hello|hey)/, async ({ message, say }) => {
     const welcomeMsg = {
@@ -135,6 +136,7 @@ app.message(/(hi|hello|hey)/, async ({ message, say }) => {
     };
     if (!isGenericMessageEvent(message))
         return;
+    channelIdSender = message.user;
     if (message.user != "U03P3TRJ83B") {
         channelIds.neil = message.user;
     }
@@ -533,10 +535,7 @@ app.action({ action_id: 'submit_button', block_id: 'submit_1' }, async ({ ack, r
     await ack();
     await venuesService.updateVenue(venue);
     console.log("Updating venue:", venue);
-    await runResy(channelIds.tiff);
-    // setTimeout(() => {
-    //     ;
-    // }, 2000);
+    await runResy(channelIdSender);
     await respond({
         "text": "Thanks for your request, I'll process it and get back to you if I find something."
     });
