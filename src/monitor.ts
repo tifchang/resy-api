@@ -157,6 +157,4 @@ const runResy = async (id: string) => {
   });
 };
 
-runResy("U03P3TRJ83B");
-
 export default runResy;
