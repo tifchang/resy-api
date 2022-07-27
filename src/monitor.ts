@@ -120,7 +120,6 @@ const refreshAvailability = async () => {
 
   await venuesService.init();
   const venuesToSearchFor = await venuesService.getWatchedVenues();
-  console.log(venuesToSearchFor);
 
   for (const venue of venuesToSearchFor) {
       await refreshAvailabilityForVenue(venue);
@@ -150,7 +149,7 @@ const runResy = async (id: string) => {
   console.log("running runResy");
   neilId = id;
 // every day fetch every post
-  cron.scheduleJob("*/1 * * * *", refreshAvailability);
+  cron.scheduleJob("*/1 * * * * *", refreshAvailability);
   cron.scheduleJob("1 * * * *", regenerateHeaders);
 
   regenerateHeaders().then(async () => {
@@ -158,6 +157,6 @@ const runResy = async (id: string) => {
   });
 };
 
-// runResy("U03P3TRJ83B");
+runResy("U03P3TRJ83B");
 
 export default runResy;
