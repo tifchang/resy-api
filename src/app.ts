@@ -1,13 +1,14 @@
 import pkg, { subtype, BotMessageEvent, BlockAction, AppRequestedEvent, GenericMessageEvent, MessageChangedEvent } from '@slack/bolt';
 const { App, LogLevel } = pkg;
 import 'dotenv/config';
-import runResy from './monitor.js';
+import { runResy,runResySchedule } from './monitor.js';
 import { resolve } from 'path';
 import { isGenericMessageEvent } from './utils/helpers.js';
 import { VenueToWatch } from './controllers/VenuesService.js';
 import VenuesService from "./controllers/VenuesService.js";
 const venuesService = new VenuesService();
 const uri = process.env.MONGODB_URI || "";
+import Reservations from "../models/models.js";
 import mongoose from 'mongoose';
 
 // connecting to mongo
@@ -44,9 +45,9 @@ venue = {
     "name": "",
     "id": 0,
     "notified": false,
-    "minTime": "18:00",
-    "preferredTime": "19:00",
-    "maxTime": "20:00",
+    "minTime": "19:00",
+    "preferredTime": "20:00",
+    "maxTime": "20:30",
     "shouldBook": true,
     "partySize": 2,
     "allowedDates": [],
@@ -58,97 +59,62 @@ const uuids = {
     "25973": "c28d7bb3-0c24-4da7-97a3-1d6c6ff34535",
     "42534": "e8649fc3-f506-47e5-ba6a-d35b364016f2",
     "35676": "5442af91-5983-4f89-8da1-3d38dec99998",
-    "5771": "171000b0-2ccc-47bd-9c34-e46afdce2221"
+    "5771": "171000b0-2ccc-47bd-9c34-e46afdce2221",
+    "443": "91lasd1-01k2-4ad7-991k-1d6c6ff01928"
 }
-
-const channelIds = {
-    "tiff": "U03P3TRJ83B",
-    "neil": ""
-}
+var cronSchedule = false;
 var channelIdSender = "";
 
 // welcome message
-app.message(/(hi|hello|hey)/, async ({ message, say }) => {
+app.message(/(hi|hello|hey|Hi|Hello|Hey|henlo|Henlo)/, async ({ message, say }) => {
     const welcomeMsg = {
-            "text": "Hi Neil!",
-            "blocks": [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "Hello Neil :woman-gesturing-ok: \n\n I'm Chibi Chang, your virtual assistant. I was made by Tiffany, so I'm pretty simple (she only knows how to write shitty code, but she'll write code for her favorite people)."
-                    }
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "I heard it's your birthday tomorrow! :tada: She built me to guide you through your birthday (yes, it's a whole day). \n\n Oh this picture? it's her favorite baby Neil pic :heart_eyes:"
-                    },
-                    "accessory": {
-                        "type": "image",
-                        "image_url": "https://i.ibb.co/nMSMJZP/315359-581190598568148-1914769603-n.jpg",
-                        "alt_text": "cute cat"
-                    }
-                },
-                {
-                    "type": "header",
-                    "text": {
-                        "type": "plain_text",
-                        "text": "So how does this work?",
-                        "emoji": true
-                    }
-                },
-                {
-                    "type": "divider"
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "Tiffany hid a bunch of gifts in me. There are :four: total. I will tell you what the gift is when you guess one of the three keywords. If you don't guess anything that relates to a gift, I will remain silent."
-                    }
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "*A few notes:* \n\n :love_letter: In addition to the gifts, she's written a card that will get released at set times throughout the day. If you want to see them on demand, just tell me to _Read the card_ \n :woman-raising-hand: If you get stuck, you can text Tiffany for a clue (she can't see your chat with me). \n :camera_with_flash: Once you discover a gift, text a screenshot to Tiffany. "
-                    }
-                },
-                {
-                    "type": "divider"
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "*Ready to begin?* Click the button below to begin."
-                    }
-                },
-                {
-                    "type": "actions",
-                    "block_id": 'example_1',
-                    "elements": [
-                        {
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "text": ":woman-cartwheeling: Let's do a practice round",
-                                "emoji": true
-                            },
-                            "value": "click_me_123",
-                            "action_id": "example_button"
+                "text": "Hi Neil! It's Chibi Chang.",
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "Aloha 🌺 I'm Chibi Chang. I'm a bot built by Tiffany for Neil. I'm pretty simple, but I can help you with booking highly coveted Resy reservations. I have two modes:"
                         }
-                    ]
-                }
-            ]
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "🤞 *Hope something is open:* No guarantees, but I can check every 5 minutes to see if something opens up for your specified dates. The odds are lower for some restaurants because I will wait for someone to release an existing reservation."
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "*:date: Plan ahead (⭐ higher success %):* I know when these restaurants release reservations, so I will begin checking every 1 second to book (usually 2-4 weeks out). Just set the date & I'll let you know if I could book something."
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "If you're ready, type `/reserve` to begin."
+                        }
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "context",
+                        "elements": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "💡*Note:* I've adapted from Neil's birthday. If you're looking for the original greeting for Neil's birthday, just ask me to _read the birthday greeting_."
+                            }
+                        ]
+                    }
+                ]
     } 
     if (!isGenericMessageEvent(message)) return;
     channelIdSender = message.user;
-    if (message.user != "U03P3TRJ83B") {
-        channelIds.neil = message.user;
-    }
+    channelIdSender = message.user;
     await say(welcomeMsg);
 });
 
@@ -188,16 +154,382 @@ app.message(/(read|card)/, async ({ message, say }) => {
     await say(message_1);
 });
 
+// app.command('/plan', async ({ command, ack, respond }) => {
+//         await ack();
+//         // calculate today's date
+//         let date1 = new Date();
+//         let date2 = new Date(date1);
+//         let date7 = new Date(date1);
+//         let date14 = new Date(date1);
+//         let date21 = new Date(date1);
+//         let date30 = new Date(date1);
+//         date2.setDate(date2.getDate() + 1);
+//         date7.setDate(date2.getDate() + 8);
+//         date14.setDate(date14.getDate() + 15);
+//         date21.setDate(date21.getDate() + 22);
+//         date30.setDate(date30.getDate() + 30);
+//         const offset = date1.getTimezoneOffset();
+//         date1 = new Date(date1.getTime() - (offset*60*1000));
+//         date2 = new Date(date2.getTime() - (offset*60*1000));
+//         date7 = new Date(date7.getTime() - (offset*60*1000));
+//         date14 = new Date(date14.getTime() - (offset*60*1000));
+//         date21 = new Date(date21.getTime() - (offset*60*1000));
+//         date30 = new Date(date30.getTime() - (offset*60*1000));
+//         const date1_string = date1.toISOString().split('T')[0];
+//         const date2_string = date2.toISOString().split('T')[0];
+//         const date7_string = date2.toISOString().split('T')[0];
+//         const date14_string = date14.toISOString().split('T')[0];
+//         const date21_string = date21.toISOString().split('T')[0];
+//         const date30_string = date30.toISOString().split('T')[0];
+//         const resyForm = {
+//             "blocks": [
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": "Bonjour Nilly! :woman-gesturing-ok: \n\n I can help you make a request for any of the following restaurants. Tiffany started a list for me to work with. If you don't see one you'd like to reserve, please let her know."
+//                     }
+//                 },
+//                 {
+//                     "type": "divider"
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": `*:cut_of_meat: 4 Charles Prime Rib*\n\n Reservations release for 30 days ahead at 9am EST. The earliest reservation I can get you is: ${date30_string}.`
+//                     }
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": `*:spaghetti: L'Artusi*\n\n Reservations release 14 days in advance at 9am EST. The earliest reservation I can get you is: ${date14_string}.`
+//                     }
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": `*🤌 I Sodi*\n\n Reservations release 14 days in advance at 12am EST. The earliest reservation I can get you is: ${date14_string}.`
+//                     }
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": `*:chicken: Double Chicken Please*\n\n Reservations release 7 days in advance at 12am EST. The earliest reservation I can get you is: ${date7_string}.`
+//                     }
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": `*:it: Rezdôra*\n\n Reservations release 21 days in advance at 12am EST. The earliest reservation I can get you is: ${date21_string}.`
+//                     }
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": `*:kr: Cote*\n\n Reservations release 30 days in advance at 12am EST. The earliest reservation I can get you is: ${date30_string}.`
+//                     }
+//                 },
+//                 {
+//                     "type": "divider"
+//                 },
+//                 {
+//                     "type": "section",
+//                     "block_id": "restaurants_1",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": "*:bento: Select a restaurant to book*"
+//                     },
+//                     "accessory": {
+//                         "type": "static_select",
+//                         "placeholder": {
+//                             "type": "plain_text",
+//                             "text": "Select an item",
+//                             "emoji": true
+//                         },
+//                         "options": [
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "4 Charles Prime Rib",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "834"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "L'Artusi",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "25973"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "I Sodi",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "443"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "Double Chicken Please",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "42534"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "Rezdôra",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "5771"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "Cote",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "35676"
+//                             }
+//                         ],
+//                         "action_id": "select_restaurant"
+//                     }
+//                 },
+//                 {
+//                     "type": "divider"
+//                 },
+//                 {
+//                     "type": "section",
+//                     "block_id": "party_1",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": ":dancers: *Select a party size*"
+//                     },
+//                     "accessory": {
+//                         "type": "static_select",
+//                         "placeholder": {
+//                             "type": "plain_text",
+//                             "text": "Select an item",
+//                             "emoji": true
+//                         },
+//                         "options": [
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "2",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "2"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "3",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "3"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "4",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "4"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "5",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "5"
+//                             },
+//                             {
+//                                 "text": {
+//                                     "type": "plain_text",
+//                                     "text": "6",
+//                                     "emoji": true
+//                                 },
+//                                 "value": "6"
+//                             }
+//                         ],
+//                         "action_id": "select_party"
+//                     }
+//                 },
+//                 {
+//                     "type": "divider"
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": "*:date: Please select a date for your reservation.* If you'd like to set a backup date, please add a second date."
+//                     }
+//                 },
+//                 {
+//                     "type": "actions",
+//                     "block_id": "datepickers_1",
+//                     "elements": [
+//                         {
+//                             "type": "datepicker",
+//                             "initial_date": date1_string,
+//                             "placeholder": {
+//                                 "type": "plain_text",
+//                                 "text": "Select a date",
+//                                 "emoji": true
+//                             },
+//                             "action_id": "date_1"
+//                         },
+//                         {
+//                             "type": "datepicker",
+//                             "initial_date": date2_string,
+//                             "placeholder": {
+//                                 "type": "plain_text",
+//                                 "text": "Select a date",
+//                                 "emoji": true
+//                             },
+//                             "action_id": "date_2"
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     "type": "divider"
+//                 },
+//                 {
+//                     "type": "section",
+//                     "text": {
+//                         "type": "mrkdwn",
+//                         "text": "*:clock4: Please select an ideal time for the reservation as well as a range.* I will look for a reservation at the ideal time. However, if I'm unable to find one, I will look within the range."
+//                     }
+//                 },
+//                 {
+//                     "type": "context",
+//                     "elements": [
+//                         {
+//                             "type": "plain_text",
+//                             "text": "Ideal Time",
+//                             "emoji": true
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     "type": "actions",
+//                     "block_id": "timepicker_ideal",
+//                     "elements": [
+//                         {
+//                             "type": "timepicker",
+//                             "initial_time": "20:00",
+//                             "placeholder": {
+//                                 "type": "plain_text",
+//                                 "text": "Select time",
+//                                 "emoji": true
+//                             },
+//                             "action_id": "time_ideal"
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     "type": "context",
+//                     "elements": [
+//                         {
+//                             "type": "plain_text",
+//                             "text": "Earliest / Latest",
+//                             "emoji": true
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     "type": "actions",
+//                     "block_id": "timepicker_minmax",
+//                     "elements": [
+//                         {
+//                             "type": "timepicker",
+//                             "initial_time": "19:00",
+//                             "placeholder": {
+//                                 "type": "plain_text",
+//                                 "text": "Select time",
+//                                 "emoji": true
+//                             },
+//                             "action_id": "time_min"
+//                         },
+//                         {
+//                             "type": "timepicker",
+//                             "initial_time": "22:00",
+//                             "placeholder": {
+//                                 "type": "plain_text",
+//                                 "text": "Select time",
+//                                 "emoji": true
+//                             },
+//                             "action_id": "time_max"
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     "type": "actions",
+//                     "block_id": "submit_1",
+//                     "elements": [
+//                         {
+//                             "type": "button",
+//                             "text": {
+//                                 "type": "plain_text",
+//                                 "text": ":white_check_mark: Done",
+//                                 "emoji": true
+//                             },
+//                             "value": "click_me_123",
+//                             "action_id": "submit_button"
+//                         }
+//                     ]
+//                 }
+//             ]
+//         }
+//         await respond (resyForm);
+// });
+
 app.command('/reserve', async ({ command, ack, respond }) => {
-// Acknowledge command request
     await ack();
+    // calculate today's date
+    let date1 = new Date();
+    let date2 = new Date(date1);
+    let date7 = new Date(date1);
+    let date14 = new Date(date1);
+    let date21 = new Date(date1);
+    let date30 = new Date(date1);
+    date2.setDate(date2.getDate() + 1);
+    date7.setDate(date2.getDate() + 8);
+    date14.setDate(date14.getDate() + 15);
+    date21.setDate(date21.getDate() + 22);
+    date30.setDate(date30.getDate() + 30);
+    const offset = date1.getTimezoneOffset();
+    date1 = new Date(date1.getTime() - (offset*60*1000));
+    date2 = new Date(date2.getTime() - (offset*60*1000));
+    date7 = new Date(date7.getTime() - (offset*60*1000));
+    date14 = new Date(date14.getTime() - (offset*60*1000));
+    date21 = new Date(date21.getTime() - (offset*60*1000));
+    date30 = new Date(date30.getTime() - (offset*60*1000));
+    const date1_string = date1.toISOString().split('T')[0];
+    const date2_string = date2.toISOString().split('T')[0];
+    const date7_string = date2.toISOString().split('T')[0];
+    const date14_string = date14.toISOString().split('T')[0];
+    const date21_string = date21.toISOString().split('T')[0];
+    const date30_string = date30.toISOString().split('T')[0];
     const resyForm = {
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "Hello Neil :woman-gesturing-ok: \n\n I can help you make a request for any of the following restaurants. Some of these restaurants are hard to reserve, so I will keep trying until I am able to find one or until the dates have passed. \n Tiffany started a list for me to work with. If you don't see one you'd like to reserve, please let her know."
+                    "text": "Bonjour Nilly! :woman-gesturing-ok: \n\n I can help you make a request for any of the following restaurants. Tiffany started a list for me to work with. If you don't see one you'd like to reserve, please let her know."
                 }
             },
             {
@@ -207,35 +539,75 @@ app.command('/reserve', async ({ command, ack, respond }) => {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:cut_of_meat: 4 Charles Prime Rib*\n $$$ •  4 Charles St, New York, NY 10014\n Steakhouse by Brendan Sodikoff (Chicago's Au Cheval) with contemporary offerings & vintage appeal."
+                    "text": `*:cut_of_meat: 4 Charles Prime Rib*\n\n Reservations release for 30 days ahead at 9am EST. The earliest reservation I can get you is: ${date30_string}.`
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:spaghetti: L'Artusi*\n $$$ •  228 W 10th St, New York, NY 10014\n Italian small plates are matched by an extensive wine list at this bi-level restaurant."
+                    "text": `*:spaghetti: L'Artusi*\n\n Reservations release 14 days in advance at 9am EST. The earliest reservation I can get you is: ${date14_string}.`
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:chicken: Double Chicken Please*\n $$ •  115 Allen St, New York, NY 10002\n Trendy, snug cocktail bar serving finger foods, chicken sandwiches & creative drinks."
+                    "text": `*🤌 I Sodi*\n\n Reservations release 14 days in advance at 12am EST. The earliest reservation I can get you is: ${date14_string}.`
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:kr: Cote*\n $$$ •  16 W 22nd St, New York, NY 10010\n Upscale Korean steakhouse featuring tables with smokeless grills, plus an extensive wine list."
+                    "text": `*:chicken: Double Chicken Please*\n\n Reservations release 7 days in advance at 12am EST. The earliest reservation I can get you is: ${date7_string}.`
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:it: Rezdôra*\n $$$ •  27 E 20th St, New York, NY 10003\n Italian eatery highlighting handmade pasta, traditional meat & fish dishes plus local vegetables."
+                    "text": `*:it: Rezdôra*\n\n Reservations release 21 days in advance at 12am EST. The earliest reservation I can get you is: ${date21_string}.`
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `*:kr: Cote*\n\n Reservations release 30 days in advance at 12am EST. The earliest reservation I can get you is: ${date30_string}.`
+                }
+            },
+            {
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "block_id": "type_1",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*⏰ Do you want to schedule this?*"
+                },
+                "accessory": {
+                    "type": "radio_buttons",
+                    "options": [
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "🗓️ Yes, help me get it when it drops!",
+                                "emoji": true
+                            },
+                            "value": "true"
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "🤞 No, I just hope something is open.",
+                                "emoji": true
+                            },
+                            "value": "false"
+                        }
+                    ],
+                    "action_id": "schedule_cron"
                 }
             },
             {
@@ -275,6 +647,14 @@ app.command('/reserve', async ({ command, ack, respond }) => {
                         {
                             "text": {
                                 "type": "plain_text",
+                                "text": "I Sodi",
+                                "emoji": true
+                            },
+                            "value": "443"
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
                                 "text": "Double Chicken Please",
                                 "emoji": true
                             },
@@ -283,18 +663,18 @@ app.command('/reserve', async ({ command, ack, respond }) => {
                         {
                             "text": {
                                 "type": "plain_text",
-                                "text": "Cote",
-                                "emoji": true
-                            },
-                            "value": "35676"
-                        },
-                        {
-                            "text": {
-                                "type": "plain_text",
                                 "text": "Rezdôra",
                                 "emoji": true
                             },
                             "value": "5771"
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Cote",
+                                "emoji": true
+                            },
+                            "value": "35676"
                         }
                     ],
                     "action_id": "select_restaurant"
@@ -378,7 +758,7 @@ app.command('/reserve', async ({ command, ack, respond }) => {
                 "elements": [
                     {
                         "type": "datepicker",
-                        "initial_date": "2022-07-21",
+                        "initial_date": date1_string,
                         "placeholder": {
                             "type": "plain_text",
                             "text": "Select a date",
@@ -388,7 +768,7 @@ app.command('/reserve', async ({ command, ack, respond }) => {
                     },
                     {
                         "type": "datepicker",
-                        "initial_date": "2022-07-21",
+                        "initial_date": date2_string,
                         "placeholder": {
                             "type": "plain_text",
                             "text": "Select a date",
@@ -491,11 +871,86 @@ app.command('/reserve', async ({ command, ack, respond }) => {
     await respond (resyForm);
 });
 
-app.command('/res', async({ command, ack, respond }) => {
-    await ack();
-
+// birthday greeting
+app.message(/(birthday|greeting)/, async ({ message, say }) => {
+    const welcomeMsg = {
+            "text": "Hi Neil!",
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Hello Neil :woman-gesturing-ok: \n\n I'm Chibi Chang, your virtual assistant. I was made by Tiffany, so I'm pretty simple (she only knows how to write shitty code, but she'll write code for her favorite people)."
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "I heard it's your birthday tomorrow! :tada: She built me to guide you through your birthday (yes, it's a whole day). \n\n Oh this picture? it's her favorite baby Neil pic :heart_eyes:"
+                    },
+                    "accessory": {
+                        "type": "image",
+                        "image_url": "https://i.ibb.co/nMSMJZP/315359-581190598568148-1914769603-n.jpg",
+                        "alt_text": "cute cat"
+                    }
+                },
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "So how does this work?",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Tiffany hid a bunch of gifts in me. There are :four: total. I will tell you what the gift is when you guess one of the three keywords. If you don't guess anything that relates to a gift, I will remain silent."
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*A few notes:* \n\n :love_letter: In addition to the gifts, she's written a card that will get released at set times throughout the day. If you want to see them on demand, just tell me to _Read the card_ \n :woman-raising-hand: If you get stuck, you can text Tiffany for a clue (she can't see your chat with me). \n :camera_with_flash: Once you discover a gift, text a screenshot to Tiffany. "
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Ready to begin?* Click the button below to begin."
+                    }
+                },
+                {
+                    "type": "actions",
+                    "block_id": 'example_1',
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": ":woman-cartwheeling: Let's do a practice round",
+                                "emoji": true
+                            },
+                            "value": "click_me_123",
+                            "action_id": "example_button"
+                        }
+                    ]
+                }
+            ]
+    } 
+    if (!isGenericMessageEvent(message)) return;
+    await say(welcomeMsg);
 });
-
 
 // select restaurant
 app.action<BlockAction>({ action_id: 'select_restaurant', block_id: 'restaurants_1'}, async ({ body, ack }) => {
@@ -504,29 +959,37 @@ app.action<BlockAction>({ action_id: 'select_restaurant', block_id: 'restaurants
     venue.id = parseInt(key);
     venue.name = body.state?.values.restaurants_1.select_restaurant.selected_option?.text.text || venue.name;
     venue.uuid = uuids[key];
-    // console.log("VENUE ID: " + venue.id);
-    // console.log("VENUE NAME: " + venue.name);
-    // console.log("VENUE UUID: " + venue.uuid);
+    console.log("VENUE ID: " + venue.id);
+    console.log("VENUE NAME: " + venue.name);
+    console.log("VENUE UUID: " + venue.uuid);
 });
+
 // select party size
 app.action<BlockAction>({ action_id: 'select_party', block_id: 'party_1'}, async ({ body, ack }) => {
     await ack();
     venue.partySize = parseInt(body.state?.values.party_1.select_party.selected_option?.value || "2");
-    // console.log("PARTYSIZE: " + venue.partySize);
+    console.log("PARTYSIZE: " + venue.partySize);
+});
+
+// schedule cron?
+app.action<BlockAction>({ action_id: 'schedule_cron', block_id: 'type_1'}, async ({ body, ack }) => {
+    await ack();
+    cronSchedule = (body.state?.values.type_1.schedule_cron.selected_option?.value === "true");
+    console.log("CRON STATUS: ", cronSchedule);
 });
 
 // select ideal date
 app.action<BlockAction>({ action_id: 'date_1', block_id: 'datepickers_1'}, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_1.selected_date || "");
-    // console.log("ALLOWED DATES: " + venue.allowedDates);
+    console.log("ALLOWED DATES: " + venue.allowedDates);
 });
 
 // select backup date
 app.action<BlockAction>({ action_id: 'date_2', block_id: 'datepickers_1'}, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_2.selected_date || "");
-    // console.log("ALLOWED DATES: " + venue.allowedDates);
+    console.log("ALLOWED DATES: " + venue.allowedDates);
 });
 
 // select ideal time
@@ -553,9 +1016,14 @@ app.action<BlockAction>({ action_id: 'time_max', block_id: 'timepicker_minmax'},
 
 app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, respond }) => {
     await ack();
-    await venuesService.updateVenue(venue);
     console.log("Updating venue:", venue);
-    await runResy(channelIdSender);
+    await venuesService.updateVenue(venue);
+    if (cronSchedule) {
+        console.log("scheduling ahead", venue.allowedDates);
+        await runResySchedule(channelIdSender, venue.allowedDates);
+    } else {
+        await runResy(channelIdSender);
+    }
     await respond({
         "text": "Thanks for your request, I'll process it and get back to you if I find something."
     });

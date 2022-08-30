@@ -17,7 +17,7 @@ const service = new ResyService({
   email,
   password,
 });
-var neilId = "";
+var senderId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
 
@@ -69,7 +69,7 @@ const parsePossibleSlots = async (
     venue.shouldBook = false;
     log.info(`Successfully booked at ${venue.name}`);
     await venuesService.updateWatchedVenue(venue);
-    await postMessage(neilId, venue.name);
+    await postMessage(senderId, venue.name);
   }
 };
 const refreshAvailabilityForVenue = async (venue) => {
@@ -147,9 +147,9 @@ const regenerateHeaders = async () => {
 
 const runResy = async (id: string) => {
   console.log("running runResy");
-  neilId = id;
-// every day fetch every post
-  cron.scheduleJob("*/1 * * * * *", refreshAvailability);
+  senderId = id;
+  // every day fetch every post
+  cron.scheduleJob("* */5 * * * *", refreshAvailability);
   cron.scheduleJob("1 * * * *", regenerateHeaders);
 
   regenerateHeaders().then(async () => {
@@ -157,4 +157,21 @@ const runResy = async (id: string) => {
   });
 };
 
-export default runResy;
+const runResySchedule = async (userId: string, dates: string[]) => {
+  console.log("scheduling cron");
+  senderId = userId;
+  for (const d in dates) {
+    console.log(d);
+    const year = d.split('-')[0];
+    const month = d.split('-')[1];
+    const day = d.split('-')[2];
+    // console.log("year", year, "month", month, "day", day);
+  }
+  // const startTime = new Date(Date.now() + 5000);
+  // const endTime = new Date(startTime.getTime() + 5000);
+  // const job = cron.scheduleJob({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, function(){
+  //   console.log('Time for tea!');
+  // });
+}
+
+export {runResy, runResySchedule};

@@ -12,7 +12,7 @@ const service = new ResyService({
     email,
     password,
 });
-var neilId = "";
+var senderId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
 const parsePossibleSlots = async (venue, possibleSlots) => {
@@ -54,7 +54,7 @@ const parsePossibleSlots = async (venue, possibleSlots) => {
         venue.shouldBook = false;
         log.info(`Successfully booked at ${venue.name}`);
         await venuesService.updateWatchedVenue(venue);
-        await postMessage(neilId, venue.name);
+        await postMessage(senderId, venue.name);
     }
 };
 const refreshAvailabilityForVenue = async (venue) => {
@@ -94,7 +94,6 @@ const refreshAvailability = async () => {
     log.info("Finding reservations");
     await venuesService.init();
     const venuesToSearchFor = await venuesService.getWatchedVenues();
-    console.log(venuesToSearchFor);
     for (const venue of venuesToSearchFor) {
         await refreshAvailabilityForVenue(venue);
     }
@@ -117,13 +116,28 @@ const regenerateHeaders = async () => {
 };
 const runResy = async (id) => {
     console.log("running runResy");
-    neilId = id;
+    senderId = id;
     // every day fetch every post
-    cron.scheduleJob("*/1 * * * *", refreshAvailability);
+    cron.scheduleJob("* */5 * * * *", refreshAvailability);
     cron.scheduleJob("1 * * * *", regenerateHeaders);
     regenerateHeaders().then(async () => {
         await refreshAvailability();
     });
 };
-// runResy("U03P3TRJ83B");
-export default runResy;
+const runResySchedule = async (userId, dates) => {
+    console.log("scheduling cron");
+    senderId = userId;
+    for (const d in dates) {
+        console.log(d);
+        const year = d.split('-')[0];
+        const month = d.split('-')[1];
+        const day = d.split('-')[2];
+        // console.log("year", year, "month", month, "day", day);
+    }
+    // const startTime = new Date(Date.now() + 5000);
+    // const endTime = new Date(startTime.getTime() + 5000);
+    // const job = cron.scheduleJob({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, function(){
+    //   console.log('Time for tea!');
+    // });
+};
+export { runResy, runResySchedule };
