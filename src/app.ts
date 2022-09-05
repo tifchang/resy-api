@@ -1096,7 +1096,7 @@ app.message(/(cool girl|cool|girl)/, async ({ message, say, client }) => {
     await say(cool);
 });
 
-app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) => {
+app.message(/(resy|bot|reservations|dates|Resy)/, async ({ message, say, client }) => {
     const resyReveal = {
         "text": "Title",
         "blocks": [
