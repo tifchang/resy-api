@@ -21,6 +21,14 @@ var senderId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
 
+const restaurantTimings = {
+    "834": {"numDays": 30, "time": "9:00", "checkDay": 31, "checkTime": "8:59:50"},
+    "25973": {"numDays": 14, "time": "9:00", "checkDay": 14, "checkTime": "8:59:50"},
+    "42534": {"numDays": 7, "time": "0:00", "checkDay": 8, "checkTime": "23:59:50"},
+    "35676": {"numDays": 30, "time": "0:00", "checkDay": 31, "checkTime": "23:59:50"},
+    "5771": {"numDays": 21, "time": "0:00", "checkDay": 22, "checkTime": "23:59:50"},
+    "443": {"numDays": 14, "time": "0:00", "checkDay": 15, "checkTime": "23:59:50"},
+}
 
 const parsePossibleSlots = async (
   venue: VenueToWatch,
@@ -157,15 +165,15 @@ const runResy = async (id: string) => {
   });
 };
 
-const runResySchedule = async (userId: string, dates: string[]) => {
-  console.log("scheduling cron");
+const runResySchedule = async (userId: string, dates: string[], venue: VenueToWatch) => {
+  console.log("scheduling cron...");
   senderId = userId;
+
   for (const d in dates) {
-    console.log(d);
     const year = d.split('-')[0];
     const month = d.split('-')[1];
     const day = d.split('-')[2];
-    // console.log("year", year, "month", month, "day", day);
+    console.log("year:", year, "month:", month, "day:", day);
   }
   // const startTime = new Date(Date.now() + 5000);
   // const endTime = new Date(startTime.getTime() + 5000);

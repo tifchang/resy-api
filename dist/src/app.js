@@ -143,347 +143,6 @@ app.message(/(read|card)/, async ({ message, say }) => {
     };
     await say(message_1);
 });
-// app.command('/plan', async ({ command, ack, respond }) => {
-//         await ack();
-//         // calculate today's date
-//         let date1 = new Date();
-//         let date2 = new Date(date1);
-//         let date7 = new Date(date1);
-//         let date14 = new Date(date1);
-//         let date21 = new Date(date1);
-//         let date30 = new Date(date1);
-//         date2.setDate(date2.getDate() + 1);
-//         date7.setDate(date2.getDate() + 8);
-//         date14.setDate(date14.getDate() + 15);
-//         date21.setDate(date21.getDate() + 22);
-//         date30.setDate(date30.getDate() + 30);
-//         const offset = date1.getTimezoneOffset();
-//         date1 = new Date(date1.getTime() - (offset*60*1000));
-//         date2 = new Date(date2.getTime() - (offset*60*1000));
-//         date7 = new Date(date7.getTime() - (offset*60*1000));
-//         date14 = new Date(date14.getTime() - (offset*60*1000));
-//         date21 = new Date(date21.getTime() - (offset*60*1000));
-//         date30 = new Date(date30.getTime() - (offset*60*1000));
-//         const date1_string = date1.toISOString().split('T')[0];
-//         const date2_string = date2.toISOString().split('T')[0];
-//         const date7_string = date2.toISOString().split('T')[0];
-//         const date14_string = date14.toISOString().split('T')[0];
-//         const date21_string = date21.toISOString().split('T')[0];
-//         const date30_string = date30.toISOString().split('T')[0];
-//         const resyForm = {
-//             "blocks": [
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": "Bonjour Nilly! :woman-gesturing-ok: \n\n I can help you make a request for any of the following restaurants. Tiffany started a list for me to work with. If you don't see one you'd like to reserve, please let her know."
-//                     }
-//                 },
-//                 {
-//                     "type": "divider"
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": `*:cut_of_meat: 4 Charles Prime Rib*\n\n Reservations release for 30 days ahead at 9am EST. The earliest reservation I can get you is: ${date30_string}.`
-//                     }
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": `*:spaghetti: L'Artusi*\n\n Reservations release 14 days in advance at 9am EST. The earliest reservation I can get you is: ${date14_string}.`
-//                     }
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": `*🤌 I Sodi*\n\n Reservations release 14 days in advance at 12am EST. The earliest reservation I can get you is: ${date14_string}.`
-//                     }
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": `*:chicken: Double Chicken Please*\n\n Reservations release 7 days in advance at 12am EST. The earliest reservation I can get you is: ${date7_string}.`
-//                     }
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": `*:it: Rezdôra*\n\n Reservations release 21 days in advance at 12am EST. The earliest reservation I can get you is: ${date21_string}.`
-//                     }
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": `*:kr: Cote*\n\n Reservations release 30 days in advance at 12am EST. The earliest reservation I can get you is: ${date30_string}.`
-//                     }
-//                 },
-//                 {
-//                     "type": "divider"
-//                 },
-//                 {
-//                     "type": "section",
-//                     "block_id": "restaurants_1",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": "*:bento: Select a restaurant to book*"
-//                     },
-//                     "accessory": {
-//                         "type": "static_select",
-//                         "placeholder": {
-//                             "type": "plain_text",
-//                             "text": "Select an item",
-//                             "emoji": true
-//                         },
-//                         "options": [
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "4 Charles Prime Rib",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "834"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "L'Artusi",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "25973"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "I Sodi",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "443"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "Double Chicken Please",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "42534"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "Rezdôra",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "5771"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "Cote",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "35676"
-//                             }
-//                         ],
-//                         "action_id": "select_restaurant"
-//                     }
-//                 },
-//                 {
-//                     "type": "divider"
-//                 },
-//                 {
-//                     "type": "section",
-//                     "block_id": "party_1",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": ":dancers: *Select a party size*"
-//                     },
-//                     "accessory": {
-//                         "type": "static_select",
-//                         "placeholder": {
-//                             "type": "plain_text",
-//                             "text": "Select an item",
-//                             "emoji": true
-//                         },
-//                         "options": [
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "2",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "2"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "3",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "3"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "4",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "4"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "5",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "5"
-//                             },
-//                             {
-//                                 "text": {
-//                                     "type": "plain_text",
-//                                     "text": "6",
-//                                     "emoji": true
-//                                 },
-//                                 "value": "6"
-//                             }
-//                         ],
-//                         "action_id": "select_party"
-//                     }
-//                 },
-//                 {
-//                     "type": "divider"
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": "*:date: Please select a date for your reservation.* If you'd like to set a backup date, please add a second date."
-//                     }
-//                 },
-//                 {
-//                     "type": "actions",
-//                     "block_id": "datepickers_1",
-//                     "elements": [
-//                         {
-//                             "type": "datepicker",
-//                             "initial_date": date1_string,
-//                             "placeholder": {
-//                                 "type": "plain_text",
-//                                 "text": "Select a date",
-//                                 "emoji": true
-//                             },
-//                             "action_id": "date_1"
-//                         },
-//                         {
-//                             "type": "datepicker",
-//                             "initial_date": date2_string,
-//                             "placeholder": {
-//                                 "type": "plain_text",
-//                                 "text": "Select a date",
-//                                 "emoji": true
-//                             },
-//                             "action_id": "date_2"
-//                         }
-//                     ]
-//                 },
-//                 {
-//                     "type": "divider"
-//                 },
-//                 {
-//                     "type": "section",
-//                     "text": {
-//                         "type": "mrkdwn",
-//                         "text": "*:clock4: Please select an ideal time for the reservation as well as a range.* I will look for a reservation at the ideal time. However, if I'm unable to find one, I will look within the range."
-//                     }
-//                 },
-//                 {
-//                     "type": "context",
-//                     "elements": [
-//                         {
-//                             "type": "plain_text",
-//                             "text": "Ideal Time",
-//                             "emoji": true
-//                         }
-//                     ]
-//                 },
-//                 {
-//                     "type": "actions",
-//                     "block_id": "timepicker_ideal",
-//                     "elements": [
-//                         {
-//                             "type": "timepicker",
-//                             "initial_time": "20:00",
-//                             "placeholder": {
-//                                 "type": "plain_text",
-//                                 "text": "Select time",
-//                                 "emoji": true
-//                             },
-//                             "action_id": "time_ideal"
-//                         }
-//                     ]
-//                 },
-//                 {
-//                     "type": "context",
-//                     "elements": [
-//                         {
-//                             "type": "plain_text",
-//                             "text": "Earliest / Latest",
-//                             "emoji": true
-//                         }
-//                     ]
-//                 },
-//                 {
-//                     "type": "actions",
-//                     "block_id": "timepicker_minmax",
-//                     "elements": [
-//                         {
-//                             "type": "timepicker",
-//                             "initial_time": "19:00",
-//                             "placeholder": {
-//                                 "type": "plain_text",
-//                                 "text": "Select time",
-//                                 "emoji": true
-//                             },
-//                             "action_id": "time_min"
-//                         },
-//                         {
-//                             "type": "timepicker",
-//                             "initial_time": "22:00",
-//                             "placeholder": {
-//                                 "type": "plain_text",
-//                                 "text": "Select time",
-//                                 "emoji": true
-//                             },
-//                             "action_id": "time_max"
-//                         }
-//                     ]
-//                 },
-//                 {
-//                     "type": "actions",
-//                     "block_id": "submit_1",
-//                     "elements": [
-//                         {
-//                             "type": "button",
-//                             "text": {
-//                                 "type": "plain_text",
-//                                 "text": ":white_check_mark: Done",
-//                                 "emoji": true
-//                             },
-//                             "value": "click_me_123",
-//                             "action_id": "submit_button"
-//                         }
-//                     ]
-//                 }
-//             ]
-//         }
-//         await respond (resyForm);
-// });
 app.command('/reserve', async ({ command, ack, respond }) => {
     await ack();
     // calculate today's date
@@ -955,6 +614,7 @@ app.action({ action_id: 'select_party', block_id: 'party_1' }, async ({ body, ac
     await ack();
     venue.partySize = parseInt(body.state?.values.party_1.select_party.selected_option?.value || "2");
     console.log("PARTYSIZE: " + venue.partySize);
+    console.log("VENUE: " + JSON.stringify(venue));
 });
 // schedule cron?
 app.action({ action_id: 'schedule_cron', block_id: 'type_1' }, async ({ body, ack }) => {
@@ -967,24 +627,28 @@ app.action({ action_id: 'date_1', block_id: 'datepickers_1' }, async ({ body, ac
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_1.selected_date || "");
     console.log("ALLOWED DATES: " + venue.allowedDates);
+    console.log("VENUE: " + JSON.stringify(venue));
 });
 // select backup date
 app.action({ action_id: 'date_2', block_id: 'datepickers_1' }, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_2.selected_date || "");
     console.log("ALLOWED DATES: " + venue.allowedDates);
+    console.log("VENUE: " + JSON.stringify(venue));
 });
 // select ideal time
 app.action({ action_id: 'time_ideal', block_id: 'timepicker_ideal' }, async ({ body, ack }) => {
     await ack();
     venue.preferredTime = body.state?.values.timepicker_ideal.time_ideal.selected_time || venue.preferredTime;
     console.log("PREFTIME " + venue.preferredTime);
+    console.log("VENUE: " + JSON.stringify(venue));
 });
 // select min time
 app.action({ action_id: 'time_min', block_id: 'timepicker_minmax' }, async ({ body, ack }) => {
     await ack();
     venue.minTime = body.state?.values.timepicker_minmax.time_min.selected_time || venue.minTime;
     console.log("MINTIME " + venue.minTime);
+    console.log("VENUE: " + JSON.stringify(venue));
 });
 // select max time
 app.action({ action_id: 'time_max', block_id: 'timepicker_minmax' }, async ({ body, ack }) => {
@@ -1071,7 +735,7 @@ app.message(/(cool girl|cool|girl)/, async ({ message, say, client }) => {
     };
     await say(cool);
 });
-app.message(/(resy|bot|reservations|dates)/, async ({ message, say, client }) => {
+app.message(/(resy|bot|reservations|dates|Resy)/, async ({ message, say, client }) => {
     const resyReveal = {
         "text": "Title",
         "blocks": [
