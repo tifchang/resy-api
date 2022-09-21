@@ -8,7 +8,7 @@ import { VenueToWatch } from './controllers/VenuesService.js';
 import VenuesService from "./controllers/VenuesService.js";
 const venuesService = new VenuesService();
 const uri = process.env.MONGODB_URI || "";
-import Reservations from "../models/models.js";
+import cron from "node-schedule";
 import mongoose from 'mongoose';
 
 // connecting to mongo
@@ -681,9 +681,10 @@ app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, re
     await ack();
     console.log("Updating venue:", venue);
     await venuesService.updateVenue(venue);
+    // adding in this cron scheduler to test cron scheduler hard coded
     if (cronSchedule) {
-        console.log("scheduling ahead", venue.allowedDates);
-        await runResySchedule(channelIdSender, venue.allowedDates, venue);
+        // await runResy(channelIdSender);
+        await runResySchedule(channelIdSender, venue);
     } else {
         await runResy(channelIdSender);
     }

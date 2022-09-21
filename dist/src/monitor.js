@@ -15,6 +15,14 @@ const service = new ResyService({
 var senderId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
+const restaurantTimings = {
+    "834": { "numDays": 30, "time": "9:00", "checkDay": 31, "checkHour": 8, "checkMin": 59, "checkSec": 50 },
+    "25973": { "numDays": 14, "time": "9:00", "checkDay": 14, "checkHour": 8, "checkMin": 59, "checkSec": 50 },
+    "42534": { "numDays": 7, "time": "0:00", "checkDay": 8, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
+    "35676": { "numDays": 30, "time": "0:00", "checkDay": 31, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
+    "5771": { "numDays": 21, "time": "0:00", "checkDay": 22, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
+    "443": { "numDays": 14, "time": "0:00", "checkDay": 15, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
+};
 const parsePossibleSlots = async (venue, possibleSlots) => {
     const dateToCheck = possibleSlots[0].date.start;
     log.info(`Found ${possibleSlots.length} valid open slots on ${dateToCheck} for ${venue.name}`);
@@ -115,7 +123,7 @@ const regenerateHeaders = async () => {
     }
 };
 const runResy = async (id) => {
-    console.log("running runResy");
+    console.log("🏃‍♂️ running runResy");
     senderId = id;
     // every day fetch every post
     cron.scheduleJob("* */5 * * * *", refreshAvailability);
@@ -124,20 +132,43 @@ const runResy = async (id) => {
         await refreshAvailability();
     });
 };
-const runResySchedule = async (userId, dates) => {
-    console.log("scheduling cron");
+const runResySchedule = async (userId, venue) => {
+    log.info("📆 scheduling cron for " + venue.name);
     senderId = userId;
-    for (const d in dates) {
-        console.log(d);
-        const year = d.split('-')[0];
-        const month = d.split('-')[1];
-        const day = d.split('-')[2];
-        // console.log("year", year, "month", month, "day", day);
+    const id = venue.id;
+    const offset = restaurantTimings[id].numDays;
+    const hour = restaurantTimings[id].checkHour;
+    const min = restaurantTimings[id].checkMin;
+    const sec = restaurantTimings[id].checkSec;
+    var scheduleDate = new Date(venue.allowedDates[0] + "T23:59:59");
+    var today = new Date();
+    var checkDate = scheduleDate;
+    if (Date.parse(today.toString()) < checkDate.setDate(scheduleDate.getDate() - offset)) {
+        checkDate.setHours(hour, min, sec);
+        log.info("⏰ Scheduling cron for " + checkDate.toString());
+        const startTime = checkDate;
+        log.info("Starting at " + startTime);
+        const endTime = checkDate.setSeconds(checkDate.getSeconds() + 20);
+        log.info("Ending at: " + endTime);
+        cron.scheduleJob({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, refreshAvailability);
     }
-    // const startTime = new Date(Date.now() + 5000);
-    // const endTime = new Date(startTime.getTime() + 5000);
-    // const job = cron.scheduleJob({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, function(){
-    //   console.log('Time for tea!');
-    // });
 };
+// const startTime = new Date(Date.now() + 1000);
+// const endTime = new Date(startTime.getTime() + 5000);
+// const isodi_st = parseInt("1663732790000");
+// const isodi_et = parseInt("1663732810000");
+// cron.scheduleJob({ start: isodi_st, end: isodi_et, rule: '*/1 * * * * *' }, refreshAvailability);
+const fakeVenue = {
+    "name": "I Sodi",
+    "id": 443,
+    "notified": false,
+    "minTime": "20:00",
+    "preferredTime": "20:00",
+    "maxTime": "20:30",
+    "shouldBook": true,
+    "partySize": 2,
+    "allowedDates": ["2022-10-04"],
+    "uuid": ""
+};
+runResySchedule("hello", fakeVenue);
 export { runResy, runResySchedule };

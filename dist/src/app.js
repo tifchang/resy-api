@@ -661,9 +661,10 @@ app.action({ action_id: 'submit_button', block_id: 'submit_1' }, async ({ ack, r
     await ack();
     console.log("Updating venue:", venue);
     await venuesService.updateVenue(venue);
+    // adding in this cron scheduler to test cron scheduler hard coded
     if (cronSchedule) {
-        console.log("scheduling ahead", venue.allowedDates);
-        await runResySchedule(channelIdSender, venue.allowedDates);
+        // await runResy(channelIdSender);
+        await runResySchedule(channelIdSender, venue);
     }
     else {
         await runResy(channelIdSender);
