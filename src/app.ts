@@ -74,7 +74,7 @@ app.message(/(hi|hello|hey|Hi|Hello|Hey|henlo|Henlo)/, async ({ message, say }) 
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "Aloha 🌺 I'm Chibi Chang. I'm a bot built by Tiffany for Neil. I'm pretty simple, but I can help you with booking highly coveted Resy reservations. I have two modes:"
+                            "text": "Aloha 🌺 I'm Chibi Chang. I'm a bot built by Tiffany for Neil. I'm pretty simple, but I can help you with booking highly coveted Resy reservations. My limitation is that I can only process one request per restaurant at a time. I have two modes:"
                         }
                     },
                     {
