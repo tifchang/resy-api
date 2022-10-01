@@ -22,7 +22,7 @@ const restaurantTimings = {
     "35676": { "numDays": 30, "time": "0:00", "checkDay": 31, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
     "5771": { "numDays": 21, "time": "0:00", "checkDay": 22, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
     "443": { "numDays": 14, "time": "0:00", "checkDay": 15, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
-    "0": { "numDays": 0, "time": "0:00", "checkDay": 0, "checkHour": 20, "checkMin": 52, "checkSec": 0 },
+    "0": { "numDays": 21, "time": "0:00", "checkDay": 21, "checkHour": 12, "checkMin": 57, "checkSec": 0 },
 };
 const parsePossibleSlots = async (venue, possibleSlots) => {
     const dateToCheck = possibleSlots[0].date.start;
@@ -141,6 +141,7 @@ const runResySchedule = async (userId, venue) => {
     const hour = restaurantTimings[id].checkHour;
     const min = restaurantTimings[id].checkMin;
     const sec = restaurantTimings[id].checkSec;
+    // dates cannot be shallow copied
     var scheduleDateStart = new Date(venue.allowedDates[0] + "T23:59:59");
     var scheduleDateEnd = new Date(venue.allowedDates[0] + "T23:59:59");
     var today = new Date();
@@ -154,34 +155,36 @@ const runResySchedule = async (userId, venue) => {
         checkDateEnd.setHours(hour, min, sec);
         log.info("⏰ Scheduling cron for " + checkDateStart.toString());
         checkDateEnd.setSeconds(checkDateEnd.getSeconds() + 20);
-        const startDate = Date.UTC(checkDateStart.getUTCFullYear(), checkDateStart.getUTCMonth(), checkDateStart.getUTCDate(), checkDateStart.getUTCHours(), checkDateStart.getUTCMinutes(), checkDateStart.getUTCSeconds());
-        const startTime = new Date(startDate);
-        const endDate = Date.UTC(checkDateEnd.getUTCFullYear(), checkDateEnd.getUTCMonth(), checkDateEnd.getUTCDate(), checkDateEnd.getUTCHours(), checkDateEnd.getUTCMinutes(), checkDateEnd.getUTCSeconds());
-        const endTime = new Date(endDate);
-        const startTime1 = new Date(Date.now() + 1000);
-        const endTime1 = new Date(startTime1.getTime() + 5000);
+        // converting to UTC
+        // const startDate = Date.UTC(checkDateStart.getUTCFullYear(), checkDateStart.getUTCMonth(),
+        // checkDateStart.getUTCDate(), checkDateStart.getUTCHours(),
+        // checkDateStart.getUTCMinutes(), checkDateStart.getUTCSeconds());
+        // const endDate = Date.UTC(checkDateEnd.getUTCFullYear(), checkDateEnd.getUTCMonth(),
+        // checkDateEnd.getUTCDate(), checkDateEnd.getUTCHours(),
+        // checkDateEnd.getUTCMinutes(), checkDateEnd.getUTCSeconds());
+        const startTime = new Date(checkDateStart);
+        const endTime = new Date(checkDateEnd);
         log.info("Starting at " + startTime);
         log.info("Ending at: " + endTime);
-        console.log(startTime);
-        console.log(endTime);
-        console.log(startTime1);
-        console.log(endTime1);
+        console.log(startTime, endTime);
+        cron.scheduleJob("1 * * * *", regenerateHeaders);
         cron.scheduleJob({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, refreshAvailability);
+        cron.scheduleJob({ start: startTime, end: endTime, rule: '1 * * * *' }, regenerateHeaders);
     }
 };
-// const isodi_st = parseInt("1663732790000");
-// const isodi_et = parseInt("1663732810000");
+// const startTime1 = new Date(Date.now() + 1000);
+// const endTime1 = new Date(startTime1.getTime() + 5000);
 // cron.scheduleJob({ start: isodi_st, end: isodi_et, rule: '*/1 * * * * *' }, refreshAvailability);
 const fakeVenue = {
-    "name": "Test",
+    "name": "Rezdora",
     "id": 0,
     "notified": false,
-    "minTime": "20:00",
-    "preferredTime": "20:30",
-    "maxTime": "20:30",
+    "minTime": "11:00",
+    "preferredTime": "11:30",
+    "maxTime": "2:30",
     "shouldBook": true,
-    "partySize": 4,
-    "allowedDates": ["2022-09-21"],
+    "partySize": 2,
+    "allowedDates": ["2022-10-22"],
     "uuid": ""
 };
 var scheduledJobs = cron.scheduledJobs;
