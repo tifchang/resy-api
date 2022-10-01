@@ -12,9 +12,19 @@ const service = new ResyService({
     email,
     password,
 });
-var neilId = "";
+var senderId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
+const restaurantTimings = {
+    "834": { "numDays": 29, "time": "9:00", "checkHour": 9, "checkMin": 0, "checkSec": 5 },
+    "25973": { "numDays": 14, "time": "9:00", "checkHour": 9, "checkMin": 0, "checkSec": 5 },
+    "42534": { "numDays": 6, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    "35676": { "numDays": 29, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    "5771": { "numDays": 21, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    // "5771": {"numDays": 20, "time": "0:00", "checkHour": 13, "checkMin": 49, "checkSec": 50},
+    "443": { "numDays": 13, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    // "0": {"numDays": 21, "time": "0:00", "checkHour": 13, "checkMin": 9, "checkSec": 0},
+};
 const parsePossibleSlots = async (venue, possibleSlots) => {
     const dateToCheck = possibleSlots[0].date.start;
     log.info(`Found ${possibleSlots.length} valid open slots on ${dateToCheck} for ${venue.name}`);
@@ -54,7 +64,7 @@ const parsePossibleSlots = async (venue, possibleSlots) => {
         venue.shouldBook = false;
         log.info(`Successfully booked at ${venue.name}`);
         await venuesService.updateWatchedVenue(venue);
-        await postMessage(neilId, venue.name);
+        await postMessage(senderId, venue.name);
     }
 };
 const refreshAvailabilityForVenue = async (venue) => {
@@ -94,7 +104,6 @@ const refreshAvailability = async () => {
     log.info("Finding reservations");
     await venuesService.init();
     const venuesToSearchFor = await venuesService.getWatchedVenues();
-    console.log(venuesToSearchFor);
     for (const venue of venuesToSearchFor) {
         await refreshAvailabilityForVenue(venue);
     }
@@ -116,14 +125,48 @@ const regenerateHeaders = async () => {
     }
 };
 const runResy = async (id) => {
-    console.log("running runResy");
-    neilId = id;
+    console.log("🏃‍♂️ running runResy");
+    senderId = id;
     // every day fetch every post
-    cron.scheduleJob("*/1 * * * *", refreshAvailability);
+    cron.scheduleJob("* */5 * * * *", refreshAvailability);
     cron.scheduleJob("1 * * * *", regenerateHeaders);
     regenerateHeaders().then(async () => {
         await refreshAvailability();
     });
 };
-// runResy("U03P3TRJ83B");
-export default runResy;
+const runResySchedule = async (userId, venue) => {
+    log.info("📆 scheduling cron for " + venue.name);
+    senderId = userId;
+    const id = venue.id;
+    const offset = restaurantTimings[id].numDays;
+    const hour = restaurantTimings[id].checkHour;
+    const min = restaurantTimings[id].checkMin;
+    const sec = restaurantTimings[id].checkSec;
+    // dates cannot be shallow copied
+    var scheduleDateStart = new Date(venue.allowedDates[0] + "T23:59:59");
+    var scheduleDateEnd = new Date(venue.allowedDates[0] + "T23:59:59");
+    var today = new Date();
+    const checkDateStart = scheduleDateStart;
+    checkDateStart.setDate(scheduleDateStart.getDate() - offset);
+    const checkDateEnd = scheduleDateEnd;
+    checkDateEnd.setDate(checkDateEnd.getDate() - offset);
+    checkDateStart.setHours(hour, min, sec);
+    checkDateEnd.setHours(hour, min, sec);
+    checkDateStart.setSeconds(checkDateEnd.getSeconds() - 10);
+    log.info("Checking date for: " + checkDateStart);
+    if (Date.parse(today.toString()) < Date.parse(checkDateStart.toString())) {
+        log.info("⏰ Scheduling cron for " + checkDateStart.toString());
+        const startTime = new Date(checkDateStart);
+        const endTime = new Date(checkDateEnd);
+        log.info("Starting at " + startTime);
+        log.info("Ending at: " + endTime);
+        cron.scheduleJob({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, refreshAvailability);
+        cron.scheduleJob({ start: startTime, end: endTime, rule: '1 * * * *' }, regenerateHeaders);
+        regenerateHeaders();
+    }
+    else if (Date.parse(today.toString()) > Date.parse(checkDateStart.toString())) {
+        log.info("😥 Can't book this res. The date has passed!");
+        return;
+    }
+};
+export { runResy, runResySchedule };

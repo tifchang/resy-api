@@ -179,7 +179,6 @@ class VenuesService {
             }
             // do something with the results
             log.info("✅ Updated", res.name, "in MongoDB.");
-            log.info("🤖 Now checking Resy...");
             return;
         })
             .catch((err) => {

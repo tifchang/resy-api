@@ -4,8 +4,6 @@ import { fileURLToPath } from "url";
 import { v4 as uuid } from "uuid";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import Reservations from "../../models/models.js";
-import { Reservation } from "src/types/types.js";
-import runResy from '../monitor.js';
 import log from "../log.js";
 
 export interface VenueToWatch {
@@ -217,7 +215,6 @@ class VenuesService {
       }
       // do something with the results
       log.info("✅ Updated", res.name, "in MongoDB.");
-      log.info("🤖 Now checking Resy...");
       return;
     })
     .catch((err) => {
