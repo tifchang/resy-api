@@ -63,7 +63,7 @@ const uuids = {
     "443": "91lasd1-01k2-4ad7-991k-1d6c6ff01928"
 }
 var cronSchedule = false;
-var channelIdSender = "";
+var channelIdSender = "U03P3TRJ83B";
 
 // welcome message
 app.message(/(hi|hello|hey|Hi|Hello|Hey|henlo|Henlo)/, async ({ message, say }) => {
@@ -114,7 +114,7 @@ app.message(/(hi|hello|hey|Hi|Hello|Hey|henlo|Henlo)/, async ({ message, say }) 
     } 
     if (!isGenericMessageEvent(message)) return;
     channelIdSender = message.user;
-    channelIdSender = message.user;
+    console.log("user id", channelIdSender);
     await say(welcomeMsg);
 });
 
@@ -626,55 +626,55 @@ app.action<BlockAction>({ action_id: 'select_restaurant', block_id: 'restaurants
 app.action<BlockAction>({ action_id: 'select_party', block_id: 'party_1'}, async ({ body, ack }) => {
     await ack();
     venue.partySize = parseInt(body.state?.values.party_1.select_party.selected_option?.value || "2");
-    console.log("PARTYSIZE: " + venue.partySize);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("PARTYSIZE: " + venue.partySize);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 
 // schedule cron?
 app.action<BlockAction>({ action_id: 'schedule_cron', block_id: 'type_1'}, async ({ body, ack }) => {
     await ack();
     cronSchedule = (body.state?.values.type_1.schedule_cron.selected_option?.value === "true");
-    console.log("CRON STATUS: ", cronSchedule);
+    // console.log("CRON STATUS: ", cronSchedule);
 });
 
 // select ideal date
 app.action<BlockAction>({ action_id: 'date_1', block_id: 'datepickers_1'}, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_1.selected_date || "");
-    console.log("ALLOWED DATES: " + venue.allowedDates);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("ALLOWED DATES: " + venue.allowedDates);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 
 // select backup date
 app.action<BlockAction>({ action_id: 'date_2', block_id: 'datepickers_1'}, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_2.selected_date || "");
-    console.log("ALLOWED DATES: " + venue.allowedDates);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("ALLOWED DATES: " + venue.allowedDates);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 
 // select ideal time
 app.action<BlockAction>({ action_id: 'time_ideal', block_id: 'timepicker_ideal'}, async ({ body, ack }) => {
     await ack();
     venue.preferredTime = body.state?.values.timepicker_ideal.time_ideal.selected_time || venue.preferredTime;
-    console.log("PREFTIME " + venue.preferredTime);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("PREFTIME " + venue.preferredTime);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 
 // select min time
 app.action<BlockAction>({ action_id: 'time_min', block_id: 'timepicker_minmax'}, async ({ body, ack }) => {
     await ack();
     venue.minTime = body.state?.values.timepicker_minmax.time_min.selected_time || venue.minTime;
-    console.log("MINTIME " + venue.minTime);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("MINTIME " + venue.minTime);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 
 // select max time
 app.action<BlockAction>({ action_id: 'time_max', block_id: 'timepicker_minmax'}, async ({ body, ack }) => {
     await ack();
     venue.maxTime = body.state?.values.timepicker_minmax.time_max.selected_time || venue.maxTime;
-    console.log("MAXTIME " + venue.maxTime);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("MAXTIME " + venue.maxTime);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 
 app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, respond }) => {
@@ -683,7 +683,6 @@ app.action({ action_id: 'submit_button', block_id: 'submit_1'}, async ({ ack, re
     await venuesService.updateVenue(venue);
     // adding in this cron scheduler to test cron scheduler hard coded
     if (cronSchedule) {
-        // await runResy(channelIdSender);
         await runResySchedule(channelIdSender, venue);
     } else {
         await runResy(channelIdSender);

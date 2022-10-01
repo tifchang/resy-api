@@ -53,7 +53,7 @@ const uuids = {
     "443": "91lasd1-01k2-4ad7-991k-1d6c6ff01928"
 };
 var cronSchedule = false;
-var channelIdSender = "";
+var channelIdSender = "U03P3TRJ83B";
 // welcome message
 app.message(/(hi|hello|hey|Hi|Hello|Hey|henlo|Henlo)/, async ({ message, say }) => {
     const welcomeMsg = {
@@ -104,7 +104,7 @@ app.message(/(hi|hello|hey|Hi|Hello|Hey|henlo|Henlo)/, async ({ message, say }) 
     if (!isGenericMessageEvent(message))
         return;
     channelIdSender = message.user;
-    channelIdSender = message.user;
+    console.log("user id", channelIdSender);
     await say(welcomeMsg);
 });
 app.message(/(read|card)/, async ({ message, say }) => {
@@ -663,7 +663,6 @@ app.action({ action_id: 'submit_button', block_id: 'submit_1' }, async ({ ack, r
     await venuesService.updateVenue(venue);
     // adding in this cron scheduler to test cron scheduler hard coded
     if (cronSchedule) {
-        // await runResy(channelIdSender);
         await runResySchedule(channelIdSender, venue);
     }
     else {

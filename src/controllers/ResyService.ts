@@ -69,6 +69,8 @@ class ResyService extends BaseService {
   email: string;
   password: string;
 
+  
+
   constructor({ email, password }: { email: string; password: string }) {
     super(BASE_URL);
     this.email = email;
