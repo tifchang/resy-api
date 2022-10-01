@@ -16,14 +16,14 @@ var senderId = "";
 const textController = new TextService();
 const venuesService = new VenuesService();
 const restaurantTimings = {
-    "834": { "numDays": 28, "time": "9:00", "checkDay": 28, "checkHour": 8, "checkMin": 59, "checkSec": 50 },
-    "25973": { "numDays": 14, "time": "9:00", "checkDay": 14, "checkHour": 8, "checkMin": 59, "checkSec": 50 },
-    "42534": { "numDays": 7, "time": "0:00", "checkDay": 8, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
-    "35676": { "numDays": 30, "time": "0:00", "checkDay": 31, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
-    // "5771": {"numDays": 21, "time": "0:00", "checkDay": 22, "checkHour": 23, "checkMin": 59, "checkSec": 50},
-    "5771": { "numDays": 20, "time": "0:00", "checkDay": 21, "checkHour": 13, "checkMin": 49, "checkSec": 50 },
-    "443": { "numDays": 14, "time": "0:00", "checkDay": 15, "checkHour": 23, "checkMin": 59, "checkSec": 50 },
-    "0": { "numDays": 21, "time": "0:00", "checkDay": 21, "checkHour": 13, "checkMin": 9, "checkSec": 0 },
+    "834": { "numDays": 29, "time": "9:00", "checkHour": 9, "checkMin": 0, "checkSec": 5 },
+    "25973": { "numDays": 14, "time": "9:00", "checkHour": 9, "checkMin": 0, "checkSec": 5 },
+    "42534": { "numDays": 6, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    "35676": { "numDays": 29, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    "5771": { "numDays": 21, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    // "5771": {"numDays": 20, "time": "0:00", "checkHour": 13, "checkMin": 49, "checkSec": 50},
+    "443": { "numDays": 13, "time": "0:00", "checkHour": 0, "checkMin": 0, "checkSec": 5 },
+    // "0": {"numDays": 21, "time": "0:00", "checkHour": 13, "checkMin": 9, "checkSec": 0},
 };
 const parsePossibleSlots = async (venue, possibleSlots) => {
     const dateToCheck = possibleSlots[0].date.start;
@@ -138,7 +138,7 @@ const runResySchedule = async (userId, venue) => {
     log.info("📆 scheduling cron for " + venue.name);
     senderId = userId;
     const id = venue.id;
-    const offset = restaurantTimings[id].checkDay;
+    const offset = restaurantTimings[id].numDays;
     const hour = restaurantTimings[id].checkHour;
     const min = restaurantTimings[id].checkMin;
     const sec = restaurantTimings[id].checkSec;
@@ -150,12 +150,12 @@ const runResySchedule = async (userId, venue) => {
     checkDateStart.setDate(scheduleDateStart.getDate() - offset);
     const checkDateEnd = scheduleDateEnd;
     checkDateEnd.setDate(checkDateEnd.getDate() - offset);
+    checkDateStart.setHours(hour, min, sec);
+    checkDateEnd.setHours(hour, min, sec);
+    checkDateStart.setSeconds(checkDateEnd.getSeconds() - 10);
     log.info("Checking date for: " + checkDateStart);
     if (Date.parse(today.toString()) < Date.parse(checkDateStart.toString())) {
-        checkDateStart.setHours(hour, min, sec);
-        checkDateEnd.setHours(hour, min, sec);
         log.info("⏰ Scheduling cron for " + checkDateStart.toString());
-        checkDateEnd.setSeconds(checkDateEnd.getSeconds() + 10);
         const startTime = new Date(checkDateStart);
         const endTime = new Date(checkDateEnd);
         log.info("Starting at " + startTime);
@@ -169,18 +169,4 @@ const runResySchedule = async (userId, venue) => {
         return;
     }
 };
-const fakeVenue = {
-    "name": "Rezdora",
-    "id": 0,
-    "notified": false,
-    "minTime": "11:00",
-    "preferredTime": "11:30",
-    "maxTime": "2:30",
-    "shouldBook": true,
-    "partySize": 2,
-    "allowedDates": ["2022-10-22"],
-    "uuid": ""
-};
-var scheduledJobs = cron.scheduledJobs;
-console.log(JSON.stringify(scheduledJobs));
 export { runResy, runResySchedule };

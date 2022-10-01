@@ -396,7 +396,7 @@ app.command('/reserve', async ({ command, ack, respond }) => {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*:date: Please select a date for your reservation.* If you'd like to set a backup date, please add a second date."
+                    "text": "*:date: Please select a date for your reservation.*"
                 }
             },
             {
@@ -413,16 +413,16 @@ app.command('/reserve', async ({ command, ack, respond }) => {
                         },
                         "action_id": "date_1"
                     },
-                    {
-                        "type": "datepicker",
-                        "initial_date": date2_string,
-                        "placeholder": {
-                            "type": "plain_text",
-                            "text": "Select a date",
-                            "emoji": true
-                        },
-                        "action_id": "date_2"
-                    }
+                    // {
+                    //     "type": "datepicker",
+                    //     "initial_date": date2_string,
+                    //     "placeholder": {
+                    //         "type": "plain_text",
+                    //         "text": "Select a date",
+                    //         "emoji": true
+                    //     },
+                    //     "action_id": "date_2"
+                    // }
                 ]
             },
             {
@@ -613,49 +613,49 @@ app.action({ action_id: 'select_restaurant', block_id: 'restaurants_1' }, async 
 app.action({ action_id: 'select_party', block_id: 'party_1' }, async ({ body, ack }) => {
     await ack();
     venue.partySize = parseInt(body.state?.values.party_1.select_party.selected_option?.value || "2");
-    console.log("PARTYSIZE: " + venue.partySize);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("PARTYSIZE: " + venue.partySize);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 // schedule cron?
 app.action({ action_id: 'schedule_cron', block_id: 'type_1' }, async ({ body, ack }) => {
     await ack();
     cronSchedule = (body.state?.values.type_1.schedule_cron.selected_option?.value === "true");
-    console.log("CRON STATUS: ", cronSchedule);
+    // console.log("CRON STATUS: ", cronSchedule);
 });
 // select ideal date
 app.action({ action_id: 'date_1', block_id: 'datepickers_1' }, async ({ body, ack }) => {
     await ack();
     venue.allowedDates.push(body.state?.values.datepickers_1.date_1.selected_date || "");
-    console.log("ALLOWED DATES: " + venue.allowedDates);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("ALLOWED DATES: " + venue.allowedDates);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 // select backup date
-app.action({ action_id: 'date_2', block_id: 'datepickers_1' }, async ({ body, ack }) => {
-    await ack();
-    venue.allowedDates.push(body.state?.values.datepickers_1.date_2.selected_date || "");
-    console.log("ALLOWED DATES: " + venue.allowedDates);
-    console.log("VENUE: " + JSON.stringify(venue));
-});
+// app.action<BlockAction>({ action_id: 'date_2', block_id: 'datepickers_1'}, async ({ body, ack }) => {
+//     await ack();
+//     venue.allowedDates.push(body.state?.values.datepickers_1.date_2.selected_date || "");
+//     // console.log("ALLOWED DATES: " + venue.allowedDates);
+//     // console.log("VENUE: " + JSON.stringify(venue));
+// });
 // select ideal time
 app.action({ action_id: 'time_ideal', block_id: 'timepicker_ideal' }, async ({ body, ack }) => {
     await ack();
     venue.preferredTime = body.state?.values.timepicker_ideal.time_ideal.selected_time || venue.preferredTime;
-    console.log("PREFTIME " + venue.preferredTime);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("PREFTIME " + venue.preferredTime);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 // select min time
 app.action({ action_id: 'time_min', block_id: 'timepicker_minmax' }, async ({ body, ack }) => {
     await ack();
     venue.minTime = body.state?.values.timepicker_minmax.time_min.selected_time || venue.minTime;
-    console.log("MINTIME " + venue.minTime);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("MINTIME " + venue.minTime);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 // select max time
 app.action({ action_id: 'time_max', block_id: 'timepicker_minmax' }, async ({ body, ack }) => {
     await ack();
     venue.maxTime = body.state?.values.timepicker_minmax.time_max.selected_time || venue.maxTime;
-    console.log("MAXTIME " + venue.maxTime);
-    console.log("VENUE: " + JSON.stringify(venue));
+    // console.log("MAXTIME " + venue.maxTime);
+    // console.log("VENUE: " + JSON.stringify(venue));
 });
 app.action({ action_id: 'submit_button', block_id: 'submit_1' }, async ({ ack, respond }) => {
     await ack();
@@ -668,6 +668,19 @@ app.action({ action_id: 'submit_button', block_id: 'submit_1' }, async ({ ack, r
     else {
         await runResy(channelIdSender);
     }
+    // venue reset
+    venue = {
+        "name": "",
+        "id": 0,
+        "notified": false,
+        "minTime": "19:00",
+        "preferredTime": "20:00",
+        "maxTime": "20:30",
+        "shouldBook": true,
+        "partySize": 2,
+        "allowedDates": [],
+        "uuid": ""
+    };
     await respond({
         "text": "Thanks for your request, I'll process it and get back to you if I find something."
     });
